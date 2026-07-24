@@ -96,7 +96,7 @@ export function AIAgent() {
           <div className="glass-card gradient-border p-8 max-w-3xl mx-auto mb-12">
             <h3 className="text-xl md:text-2xl font-bold font-[family-name:var(--font-display)] mb-4 text-center">
               Economia real para{" "}
-              <span className="text-primary">sua empresa</span>
+              <span className="hero-text-gradient">sua empresa</span>
             </h3>
             <p className="text-muted-foreground text-center mb-4">
               Com o agente de IA, sua empresa não precisa:

@@ -123,7 +123,7 @@ export function Comparison() {
         <ScrollReveal className="text-center mb-14">
           <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-3">
             Quais profissionais você precisa{" "}
-            <span className="text-primary">para executar este plano?</span>
+            <span className="hero-text-gradient">para executar este plano?</span>
           </h2>
           <p className="text-muted-foreground text-lg">
             Quanto você paga por cada um deles{" "}

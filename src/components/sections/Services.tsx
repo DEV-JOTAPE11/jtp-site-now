@@ -55,7 +55,7 @@ export function Services() {
       <div className="max-w-6xl mx-auto relative z-10">
         <ScrollReveal className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4">
-            Nossos <span className="text-primary">Serviços</span>
+            Nossos <span className="hero-text-gradient">Serviços</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Soluções completas para escalar o seu negócio de forma estruturada.

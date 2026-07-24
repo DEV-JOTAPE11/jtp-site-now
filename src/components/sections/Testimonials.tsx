@@ -7,7 +7,7 @@ export function Testimonials() {
         <ScrollReveal className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4">
             Histórias reais de{" "}
-            <span className="text-primary">resultados</span>
+            <span className="hero-text-gradient">resultados</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Veja as histórias reais de quem já alcançou resultados

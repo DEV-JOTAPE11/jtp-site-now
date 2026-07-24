@@ -50,7 +50,7 @@ export function Differentials() {
       <div className="max-w-6xl mx-auto relative z-10">
         <ScrollReveal className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4">
-            Por que somos <span className="text-primary">diferentes</span>
+            Por que somos <span className="hero-text-gradient">diferentes</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Não só geramos demanda, atuamos dentro do processo comercial da sua
