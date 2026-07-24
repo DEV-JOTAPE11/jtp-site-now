@@ -177,6 +177,45 @@ select {
 }
 
 /* ============================================
+   DIFFERENTIALS BUTTON
+   ============================================ */
+.btn-differentials {
+  background: linear-gradient(
+    92deg,
+    #f4fbff 0%,
+    #7eb8ff 34%,
+    #004efd 68%,
+    #b9d7ff 100%
+  );
+  color: #001a4d;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.btn-differentials:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(0, 78, 253, 0.4),
+    0 0 24px rgba(0, 78, 253, 0.3);
+}
+
+.btn-differentials::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.6s ease-in-out;
+}
+
+.btn-differentials:hover::after {
+  transform: translateX(100%) skewX(-15deg);
+}
+
+/* ============================================
    GLOW BLUE
    ============================================ */
 .glow-blue {

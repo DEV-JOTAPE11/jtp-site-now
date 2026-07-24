@@ -121,21 +121,21 @@ export function Differentials() {
               </div>
             </ScrollReveal>
           ))}
-          
+
           <div className="col-span-1 md:col-span-3 mt-8">
             <ScrollReveal delay={0.6}>
               <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-primary/30 via-primary/80 to-primary/30 group overflow-hidden">
                 <div className="absolute inset-0 bg-primary/20 animate-pulse blur-md"></div>
-                <div className="relative bg-background/90 backdrop-blur-2xl rounded-2xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
-                  <div className="text-center md:text-left flex-1">
-                    <h3 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-display)] text-foreground">
-                      Descubra em 2 minutos quanto sua empresa está perdendo sem estratégia digital
+                <div className="relative bg-background/90 backdrop-blur-2xl rounded-2xl p-8 md:p-10 flex flex-col items-center justify-center gap-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
+                  <div className="text-center w-full">
+                    <h3 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-display)] text-foreground whitespace-nowrap overflow-hidden text-ellipsis">
+                      Descubra em 2 minutos quanto sua empresa está perdendo sem estratégia digital!
                     </h3>
                   </div>
                   <div className="flex-shrink-0">
-                    <button 
+                    <button
                       onClick={scrollToFormulario}
-                      className="btn-cta glow-blue"
+                      className="btn-cta btn-differentials glow-blue md:min-w-[400px] md:py-4 md:text-lg"
                     >
                       Ver diagnóstico grátis
                     </button>
@@ -163,7 +163,7 @@ export function Differentials() {
               </div>
             </ScrollReveal>
           ))}
-          
+
           <div className="col-span-1 mt-6">
             <ScrollReveal delay={0.5}>
               <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-primary/30 via-primary/80 to-primary/30 group overflow-hidden">
@@ -171,13 +171,13 @@ export function Differentials() {
                 <div className="relative bg-background/90 backdrop-blur-2xl rounded-2xl p-5 flex flex-col items-center gap-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
                   <div className="text-center flex-1">
                     <h3 className="text-lg font-bold font-[family-name:var(--font-display)] text-foreground">
-                      Descubra em 2 minutos quanto sua empresa está perdendo sem estratégia digital
+                      Descubra em 2 minutos quanto sua empresa está perdendo sem estratégia digital!
                     </h3>
                   </div>
                   <div className="flex-shrink-0 w-full flex justify-center">
-                    <button 
+                    <button
                       onClick={scrollToFormulario}
-                      className="btn-cta glow-blue w-full sm:w-auto"
+                      className="btn-cta btn-differentials glow-blue w-full sm:w-auto"
                     >
                       Ver diagnóstico grátis
                     </button>
