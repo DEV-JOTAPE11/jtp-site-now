@@ -20,11 +20,12 @@ export function Hero() {
       <div className="hidden md:block relative min-h-screen">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/img/imagem-background-hero.webp"
+            src="/img/imagem-background-hero.svg"
             alt="João Pedro - Fundador da JTP Services"
             width={1200}
             height={1200}
-            className="absolute right-0 bottom-0 h-auto object-contain brightness-125 contrast-110 hero-image-mask hero-desktop-media"
+            quality={100}
+            className="absolute right-0 bottom-0 h-auto object-contain hero-image-mask hero-desktop-media"
             style={{ width: "75%" }}
             priority
           />
@@ -164,11 +165,12 @@ export function Hero() {
             }}
           />
           <Image
-            src="/img/imagem-background-hero.png"
+            src="/img/imagem-background-hero.svg"
             alt="João Pedro - Fundador da JTP Services"
             width={800}
             height={800}
-            className="relative w-full h-auto object-contain brightness-125 contrast-110 hero-image-mask-mobile"
+            quality={100}
+            className="relative w-full h-auto object-contain hero-image-mask-mobile"
             priority
           />
           <div
