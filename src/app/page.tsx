@@ -1,0 +1,46 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import { Navbar } from "@/components/layout/Navbar";
+import { Hero } from "@/components/sections/Hero";
+import { Differentials } from "@/components/sections/Differentials";
+import { Testimonials } from "@/components/sections/Testimonials";
+import { Services } from "@/components/sections/Services";
+import { Comparison } from "@/components/sections/Comparison";
+import { AIAgent } from "@/components/sections/AIAgent";
+import { Contact } from "@/components/sections/Contact";
+import { Footer } from "@/components/layout/Footer";
+
+const ParticlesCanvas = dynamic(
+  () =>
+    import("@/components/shared/ParticlesCanvas").then(
+      (mod) => mod.ParticlesCanvas
+    ),
+  { ssr: false }
+);
+
+const FloatingWhatsApp = dynamic(
+  () =>
+    import("@/components/shared/FloatingWhatsApp").then(
+      (mod) => mod.FloatingWhatsApp
+    ),
+  { ssr: false }
+);
+
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
+      <ParticlesCanvas />
+      <Navbar />
+      <Hero />
+      <Differentials />
+      <Testimonials />
+      <Services />
+      <Comparison />
+      <AIAgent />
+      <Contact />
+      <Footer />
+      <FloatingWhatsApp />
+    </main>
+  );
+}
