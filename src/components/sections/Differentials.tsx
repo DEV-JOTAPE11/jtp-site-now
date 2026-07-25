@@ -61,12 +61,6 @@ const DIFFERENTIALS_MOBILE = [
     description:
       "Nada de campanha no impulso. Planejamos toda a jornada, da atração até o fechamento, com foco em resultado real e não em número de vaidade.",
   },
-  {
-    icon: Headphones,
-    title: "Seu processo comercial também melhora",
-    description:
-      "Ajustamos o atendimento pra nenhum lead esfriar. Não geramos só demanda, atuamos dentro do processo de venda da sua empresa.",
-  },
 ];
 
 function scrollToFormulario() {
