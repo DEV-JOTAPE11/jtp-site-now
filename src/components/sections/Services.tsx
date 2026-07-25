@@ -2,6 +2,7 @@
 
 import { Video, BarChart3, PenTool, Globe, Share2 } from "lucide-react";
 import { ScrollReveal } from "@/components/shared/ScrollReveal";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 const SERVICES = [
   {
@@ -62,23 +63,45 @@ export function Services() {
           </p>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SERVICES.map((service, index) => (
-            <ScrollReveal key={service.title} delay={index * 0.1}>
-              <div className="glass-card gradient-border p-8 text-center hover:bg-card/60 transition-all duration-300 group">
-                <div className="w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-5 group-hover:glow-blue transition-all duration-300">
-                  <service.icon className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold font-[family-name:var(--font-display)] mb-3">
-                  {service.title}
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  {service.description}
-                </p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
+        <ul className="grid grid-cols-2 grid-rows-3 gap-4 lg:grid-cols-12 lg:grid-rows-2">
+          {SERVICES.map((service, index) => {
+            let areaClass = "";
+            if (index === 0) areaClass = "[grid-area:1/1/2/2] lg:[grid-area:1/1/2/5]";
+            if (index === 1) areaClass = "[grid-area:1/2/2/3] lg:[grid-area:2/1/3/5]";
+            if (index === 2) areaClass = "[grid-area:2/1/3/2] lg:[grid-area:1/5/3/9]";
+            if (index === 3) areaClass = "[grid-area:2/2/3/3] lg:[grid-area:1/9/2/13]";
+            if (index === 4) areaClass = "[grid-area:3/1/4/3] lg:[grid-area:2/9/3/13]";
+
+            return (
+              <ScrollReveal key={service.title} delay={index * 0.1} className={areaClass}>
+                <li className="relative h-full rounded-[1.25rem] border border-[rgba(40,126,215,0.2)] p-2 md:rounded-[1.5rem] md:p-3 list-none">
+                  <GlowingEffect
+                    spread={40}
+                    glow={true}
+                    disabled={false}
+                    proximity={64}
+                    inactiveZone={0.01}
+                    borderWidth={3}
+                    variant="brand"
+                  />
+                  <div className="glass-card relative flex h-full flex-col justify-between overflow-hidden rounded-xl p-4 md:p-6 text-center hover:bg-[rgba(7,20,39,0.8)] transition-all duration-300 group z-10">
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-4 md:mb-5 group-hover:glow-blue transition-all duration-300 flex-shrink-0">
+                      <service.icon className="w-6 h-6 md:w-7 md:h-7 text-primary" />
+                    </div>
+                    <div className="flex-1 flex flex-col justify-center">
+                      <h3 className="text-base md:text-lg font-bold font-[family-name:var(--font-display)] mb-2 md:mb-3">
+                        {service.title}
+                      </h3>
+                      <p className="text-muted-foreground text-xs md:text-sm">
+                        {service.description}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </ScrollReveal>
+            );
+          })}
+        </ul>
       </div>
     </section>
   );
