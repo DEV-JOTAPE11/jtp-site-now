@@ -1,6 +1,6 @@
 "use client";
 
-import { Video, BarChart3, Bot, Globe, Share2 } from "lucide-react";
+import { Video, BarChart3, PenTool, Globe, Share2 } from "lucide-react";
 import { ScrollReveal } from "@/components/shared/ScrollReveal";
 
 const SERVICES = [
@@ -16,10 +16,10 @@ const SERVICES = [
     description: "Google Ads e Meta Ads com estratégia focada em vendas.",
   },
   {
-    icon: Bot,
-    title: "Agentes de Inteligência Artificial",
+    icon: PenTool,
+    title: "Copywriting e Páginas de Alta Conversão",
     description:
-      "IA integrada ao seu processo comercial para escalar vendas.",
+      "Textos e páginas estruturados para persuadir, gerar confiança e converter visitantes em clientes.",
   },
   {
     icon: Globe,
