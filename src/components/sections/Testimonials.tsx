@@ -253,7 +253,7 @@ export function Testimonials() {
               <video
                 ref={previewVideoRef}
                 src="/video/IMG_jonas.mp4#t=0.001"
-                className="video-phone-card__video"
+                className="video-phone-card__video pointer-events-none"
                 playsInline
                 muted
                 autoPlay
@@ -298,7 +298,7 @@ export function Testimonials() {
               <video
                 ref={lightboxVideoRef}
                 src={lightboxSrc}
-                className="lightbox__video"
+                className="lightbox__video pointer-events-none"
                 playsInline
                 loop
                 onClick={toggleLightboxVideo}

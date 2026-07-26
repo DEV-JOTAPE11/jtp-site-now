@@ -724,9 +724,21 @@ nav .jtp-desktop-inner {
     border-radius: 1.25rem;
     transform: rotate(1.5deg);
   }
-  .video-phone-card__btn {
-    display: none !important;
-  }
+}
+
+/* Hide native video controls to rely on custom overlays without conflicts */
+.video-phone-card__video::-webkit-media-controls,
+.video-phone-card__video::-webkit-media-controls-start-playback-button,
+.video-phone-card__video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+}
+
+.lightbox__video::-webkit-media-controls,
+.lightbox__video::-webkit-media-controls-start-playback-button,
+.lightbox__video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none !important;
 }
 
 /* ============================================
