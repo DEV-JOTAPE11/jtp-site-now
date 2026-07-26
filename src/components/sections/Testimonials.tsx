@@ -29,7 +29,16 @@ export function Testimonials() {
   const [lightboxIsVideo, setLightboxIsVideo] = useState(false);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const lightboxVideoRef = useRef<HTMLVideoElement | null>(null);
+  const previewVideoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // Force mobile browsers to render the first frame as a poster
+  const handlePreviewLoad = useCallback(() => {
+    const vid = previewVideoRef.current;
+    if (!vid) return;
+    vid.pause();
+    vid.currentTime = 0.001;
+  }, []);
 
   // Open lightbox (images)
   const openLightbox = useCallback(
@@ -235,11 +244,14 @@ export function Testimonials() {
               aria-label="Ampliar: Depoimento em vídeo de cliente"
             >
               <video
-                src="/video/IMG_jonas.mp4"
+                ref={previewVideoRef}
+                src="/video/IMG_jonas.mp4#t=0.001"
                 className="video-phone-card__video"
                 playsInline
                 muted
-                preload="metadata"
+                autoPlay
+                preload="auto"
+                onLoadedData={handlePreviewLoad}
                 aria-hidden="true"
               />
               {/* Play icon overlay — signals "this is a video, click to watch" */}
