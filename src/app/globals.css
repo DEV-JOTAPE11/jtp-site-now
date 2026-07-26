@@ -724,6 +724,9 @@ nav .jtp-desktop-inner {
     border-radius: 1.25rem;
     transform: rotate(1.5deg);
   }
+  .video-phone-card__btn {
+    display: none !important;
+  }
 }
 
 /* ============================================

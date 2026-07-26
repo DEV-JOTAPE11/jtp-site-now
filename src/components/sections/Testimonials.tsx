@@ -70,6 +70,11 @@ export function Testimonials() {
     if (lightboxVideoRef.current) {
       lightboxVideoRef.current.pause();
     }
+    // Pause preview video to prevent background play
+    if (previewVideoRef.current) {
+      previewVideoRef.current.pause();
+      previewVideoRef.current.currentTime = 0.001;
+    }
     setLightboxSrc(null);
     setLightboxAlt("");
     setLightboxIsVideo(false);
