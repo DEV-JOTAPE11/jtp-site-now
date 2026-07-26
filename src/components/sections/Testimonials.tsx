@@ -70,10 +70,12 @@ export function Testimonials() {
     if (lightboxVideoRef.current) {
       lightboxVideoRef.current.pause();
     }
-    // Pause preview video to prevent background play
+    // Pause preview video to prevent background play and reset its state
+    // so the native play icon reappears on mobile.
     if (previewVideoRef.current) {
       previewVideoRef.current.pause();
       previewVideoRef.current.currentTime = 0.001;
+      previewVideoRef.current.load();
     }
     setLightboxSrc(null);
     setLightboxAlt("");
