@@ -26,26 +26,62 @@ export function Testimonials() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [lightboxAlt, setLightboxAlt] = useState<string>("");
+  const [lightboxIsVideo, setLightboxIsVideo] = useState(false);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const lightboxVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  // Open lightbox
+  // Open lightbox (images)
   const openLightbox = useCallback(
     (src: string, alt: string, trigger: HTMLButtonElement) => {
       triggerRef.current = trigger;
       setLightboxSrc(src);
       setLightboxAlt(alt);
+      setLightboxIsVideo(false);
+      setIsPlaying(false);
+    },
+    []
+  );
+
+  // Open lightbox (video)
+  const openVideoLightbox = useCallback(
+    (src: string, alt: string, trigger: HTMLButtonElement) => {
+      triggerRef.current = trigger;
+      setLightboxSrc(src);
+      setLightboxAlt(alt);
+      setLightboxIsVideo(true);
+      setIsPlaying(false);
     },
     []
   );
 
   // Close lightbox
   const closeLightbox = useCallback(() => {
+    // Pause video before closing
+    if (lightboxVideoRef.current) {
+      lightboxVideoRef.current.pause();
+    }
     setLightboxSrc(null);
     setLightboxAlt("");
+    setLightboxIsVideo(false);
+    setIsPlaying(false);
     // Return focus to the card that opened the lightbox
     if (triggerRef.current) {
       triggerRef.current.focus();
       triggerRef.current = null;
+    }
+  }, []);
+
+  // Toggle play/pause on lightbox video
+  const toggleLightboxVideo = useCallback(() => {
+    const video = lightboxVideoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+      setIsPlaying(true);
+    } else {
+      video.pause();
+      setIsPlaying(false);
     }
   }, []);
 
@@ -57,6 +93,11 @@ export function Testimonials() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeLightbox();
+      // Space bar toggles play/pause when video lightbox is open
+      if (e.key === " " && lightboxIsVideo) {
+        e.preventDefault();
+        toggleLightboxVideo();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
 
@@ -64,7 +105,7 @@ export function Testimonials() {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [lightboxSrc, closeLightbox]);
+  }, [lightboxSrc, lightboxIsVideo, closeLightbox, toggleLightboxVideo]);
 
   return (
     <section id="depoimentos" className="py-20 md:py-32 px-4 relative">
@@ -177,30 +218,102 @@ export function Testimonials() {
             })}
           </div>
         </ScrollReveal>
+
+        {/* ── Video Testimonial Card ── */}
+        <ScrollReveal delay={0.35}>
+          <div className="mt-14 md:mt-20 flex justify-center px-4">
+            <button
+              type="button"
+              className="video-phone-card"
+              onClick={(e) =>
+                openVideoLightbox(
+                  "/video/IMG_jonas.mp4",
+                  "Depoimento em vídeo de cliente",
+                  e.currentTarget as HTMLButtonElement
+                )
+              }
+              aria-label="Ampliar: Depoimento em vídeo de cliente"
+            >
+              <video
+                src="/video/IMG_jonas.mp4"
+                className="video-phone-card__video"
+                playsInline
+                muted
+                preload="metadata"
+                aria-hidden="true"
+              />
+              {/* Play icon overlay — signals "this is a video, click to watch" */}
+              <div className="video-phone-card__btn">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                  <circle cx="20" cy="20" r="20" fill="rgba(0,0,0,0.4)" />
+                  <path d="M16 12V28L30 20L16 12Z" fill="rgba(255,255,255,0.9)" />
+                </svg>
+              </div>
+            </button>
+          </div>
+        </ScrollReveal>
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox — supports both images and video */}
       {lightboxSrc && (
         <div
           className="lightbox"
           onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
-          aria-label="Imagem ampliada"
+          aria-label={lightboxIsVideo ? "Vídeo ampliado" : "Imagem ampliada"}
         >
           <button
             className="lightbox__close"
             onClick={closeLightbox}
-            aria-label="Fechar imagem ampliada"
+            aria-label="Fechar"
           >
             ✕
           </button>
-          <img
-            src={lightboxSrc}
-            alt={lightboxAlt}
-            className="lightbox__img"
-            onClick={(e) => e.stopPropagation()}
-          />
+
+          {lightboxIsVideo ? (
+            <div
+              className="lightbox__video-wrapper"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <video
+                ref={lightboxVideoRef}
+                src={lightboxSrc}
+                className="lightbox__video"
+                playsInline
+                loop
+                onClick={toggleLightboxVideo}
+                aria-label={lightboxAlt}
+              />
+              {/* Play/Pause overlay inside lightbox */}
+              <button
+                type="button"
+                className={`lightbox__video-btn${isPlaying ? " is-playing" : ""}`}
+                onClick={toggleLightboxVideo}
+                aria-label={isPlaying ? "Pausar vídeo" : "Reproduzir vídeo"}
+              >
+                {isPlaying ? (
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.45)" />
+                    <rect x="15" y="13" width="6" height="22" rx="1.5" fill="rgba(255,255,255,0.9)" />
+                    <rect x="27" y="13" width="6" height="22" rx="1.5" fill="rgba(255,255,255,0.9)" />
+                  </svg>
+                ) : (
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.45)" />
+                    <path d="M19 13V35L37 24L19 13Z" fill="rgba(255,255,255,0.9)" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          ) : (
+            <img
+              src={lightboxSrc}
+              alt={lightboxAlt}
+              className="lightbox__img"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
         </div>
       )}
     </section>
