@@ -726,21 +726,6 @@ nav .jtp-desktop-inner {
   }
 }
 
-/* Hide native video controls to rely on custom overlays without conflicts */
-.video-phone-card__video::-webkit-media-controls,
-.video-phone-card__video::-webkit-media-controls-start-playback-button,
-.video-phone-card__video::-webkit-media-controls-overlay-play-button {
-  display: none !important;
-  -webkit-appearance: none !important;
-}
-
-.lightbox__video::-webkit-media-controls,
-.lightbox__video::-webkit-media-controls-start-playback-button,
-.lightbox__video::-webkit-media-controls-overlay-play-button {
-  display: none !important;
-  -webkit-appearance: none !important;
-}
-
 /* ============================================
    LIGHTBOX
    ============================================ */
@@ -807,50 +792,25 @@ nav .jtp-desktop-inner {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Lightbox — Video */
+/* Lightbox — Video (9:16 YouTube Shorts embed) */
 .lightbox__video-wrapper {
   position: relative;
-  max-height: 88vh;
   aspect-ratio: 9 / 16;
+  /* An <iframe> has no intrinsic size, so the wrapper needs a definite height.
+     Deriving it from both viewport axes keeps the 9:16 ratio exact while
+     staying inside the screen on narrow (mobile) viewports. */
+  height: min(88vh, calc(92vw * 16 / 9));
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
   animation: lightbox-scale-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.lightbox__video {
+.lightbox__video-frame {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  display: block;
-  cursor: pointer;
-}
-
-.lightbox__video-btn {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: opacity 0.3s ease;
-}
-
-.lightbox__video-btn.is-playing {
-  opacity: 0;
-}
-
-.lightbox__video-wrapper:hover .lightbox__video-btn.is-playing {
-  opacity: 1;
-}
-
-.lightbox__video-btn:focus-visible {
-  opacity: 1;
-  outline: 2px solid var(--color-ring);
-  outline-offset: -2px;
+  border: 0;
 }
 
 /* ============================================

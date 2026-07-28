@@ -22,98 +22,47 @@ const RESULTS = [
   },
 ];
 
+const VIDEO_TESTIMONIAL = {
+  youtubeId: "GDY3DjMbuLA",
+  // Vertical still frame (1080x1920) served from /public — the player itself is
+  // only fetched once the lightbox opens.
+  thumb: "/img/depoimento-thumb.jpg",
+  alt: "Depoimento em vídeo de cliente",
+};
+
+type LightboxItem =
+  | { type: "image"; src: string; alt: string }
+  | { type: "video"; youtubeId: string; alt: string };
+
 export function Testimonials() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
-  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
-  const [lightboxAlt, setLightboxAlt] = useState<string>("");
-  const [lightboxIsVideo, setLightboxIsVideo] = useState(false);
+  const [lightbox, setLightbox] = useState<LightboxItem | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const lightboxVideoRef = useRef<HTMLVideoElement | null>(null);
-  const previewVideoRef = useRef<HTMLVideoElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  // Force mobile browsers to render the first frame as a poster
-  const handlePreviewLoad = useCallback(() => {
-    const vid = previewVideoRef.current;
-    if (!vid) return;
-    vid.pause();
-    vid.currentTime = 0.001;
-  }, []);
-
-  // Open lightbox (images)
   const openLightbox = useCallback(
-    (src: string, alt: string, trigger: HTMLButtonElement) => {
+    (item: LightboxItem, trigger: HTMLButtonElement) => {
       triggerRef.current = trigger;
-      setLightboxSrc(src);
-      setLightboxAlt(alt);
-      setLightboxIsVideo(false);
-      setIsPlaying(false);
+      setLightbox(item);
     },
     []
   );
 
-  // Open lightbox (video)
-  const openVideoLightbox = useCallback(
-    (src: string, alt: string, trigger: HTMLButtonElement) => {
-      triggerRef.current = trigger;
-      setLightboxSrc(src);
-      setLightboxAlt(alt);
-      setLightboxIsVideo(true);
-      setIsPlaying(false);
-    },
-    []
-  );
-
-  // Close lightbox
+  // Clearing the state unmounts the <iframe>, which destroys the player and
+  // stops playback — no imperative pause needed.
   const closeLightbox = useCallback(() => {
-    // Pause video before closing
-    if (lightboxVideoRef.current) {
-      lightboxVideoRef.current.pause();
-    }
-    // Pause preview video to prevent background play and reset its state
-    // so the native play icon reappears on mobile.
-    if (previewVideoRef.current) {
-      previewVideoRef.current.pause();
-      previewVideoRef.current.currentTime = 0.001;
-      previewVideoRef.current.load();
-    }
-    setLightboxSrc(null);
-    setLightboxAlt("");
-    setLightboxIsVideo(false);
-    setIsPlaying(false);
-    // Return focus to the card that opened the lightbox
-    if (triggerRef.current) {
-      triggerRef.current.focus();
-      triggerRef.current = null;
-    }
-  }, []);
-
-  // Toggle play/pause on lightbox video
-  const toggleLightboxVideo = useCallback(() => {
-    const video = lightboxVideoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      video.play();
-      setIsPlaying(true);
-    } else {
-      video.pause();
-      setIsPlaying(false);
-    }
+    setLightbox(null);
+    triggerRef.current?.focus();
+    triggerRef.current = null;
   }, []);
 
   // ESC to close + lock body scroll
   useEffect(() => {
-    if (!lightboxSrc) return;
+    if (!lightbox) return;
 
     document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeLightbox();
-      // Space bar toggles play/pause when video lightbox is open
-      if (e.key === " " && lightboxIsVideo) {
-        e.preventDefault();
-        toggleLightboxVideo();
-      }
     };
     window.addEventListener("keydown", handleKeyDown);
 
@@ -121,7 +70,7 @@ export function Testimonials() {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [lightboxSrc, lightboxIsVideo, closeLightbox, toggleLightboxVideo]);
+  }, [lightbox, closeLightbox]);
 
   return (
     <section id="depoimentos" className="py-20 md:py-32 px-4 relative">
@@ -215,9 +164,8 @@ export function Testimonials() {
                   onBlur={() => setHoveredId(null)}
                   onClick={(e) =>
                     openLightbox(
-                      item.src,
-                      item.alt,
-                      e.currentTarget as HTMLButtonElement
+                      { type: "image", src: item.src, alt: item.alt },
+                      e.currentTarget
                     )
                   }
                   aria-label={`Ampliar: ${item.alt}`}
@@ -242,28 +190,28 @@ export function Testimonials() {
               type="button"
               className="video-phone-card"
               onClick={(e) =>
-                openVideoLightbox(
-                  "/video/IMG_jonas.mp4",
-                  "Depoimento em vídeo de cliente",
-                  e.currentTarget as HTMLButtonElement
+                openLightbox(
+                  {
+                    type: "video",
+                    youtubeId: VIDEO_TESTIMONIAL.youtubeId,
+                    alt: VIDEO_TESTIMONIAL.alt,
+                  },
+                  e.currentTarget
                 )
               }
-              aria-label="Ampliar: Depoimento em vídeo de cliente"
+              aria-label={`Ampliar: ${VIDEO_TESTIMONIAL.alt}`}
             >
-              <video
-                ref={previewVideoRef}
-                src="/video/IMG_jonas.mp4#t=0.001"
-                className="video-phone-card__video pointer-events-none"
-                playsInline
-                muted
-                autoPlay
-                preload="auto"
-                onLoadedData={handlePreviewLoad}
-                aria-hidden="true"
+              {/* Static thumbnail — nothing playable renders before the click. */}
+              <Image
+                src={VIDEO_TESTIMONIAL.thumb}
+                alt=""
+                fill
+                sizes="(max-width: 767px) 200px, 240px"
+                className="video-phone-card__video"
               />
-              {/* Play icon overlay — signals "this is a video, click to watch" */}
+              {/* The single play icon for this card */}
               <div className="video-phone-card__btn">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
                   <circle cx="20" cy="20" r="20" fill="rgba(0,0,0,0.4)" />
                   <path d="M16 12V28L30 20L16 12Z" fill="rgba(255,255,255,0.9)" />
                 </svg>
@@ -274,13 +222,15 @@ export function Testimonials() {
       </div>
 
       {/* Lightbox — supports both images and video */}
-      {lightboxSrc && (
+      {lightbox && (
         <div
           className="lightbox"
           onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
-          aria-label={lightboxIsVideo ? "Vídeo ampliado" : "Imagem ampliada"}
+          aria-label={
+            lightbox.type === "video" ? "Vídeo ampliado" : "Imagem ampliada"
+          }
         >
           <button
             className="lightbox__close"
@@ -290,45 +240,26 @@ export function Testimonials() {
             ✕
           </button>
 
-          {lightboxIsVideo ? (
+          {lightbox.type === "video" ? (
             <div
               className="lightbox__video-wrapper"
               onClick={(e) => e.stopPropagation()}
             >
-              <video
-                ref={lightboxVideoRef}
-                src={lightboxSrc}
-                className="lightbox__video pointer-events-none"
-                playsInline
-                loop
-                onClick={toggleLightboxVideo}
-                aria-label={lightboxAlt}
+              {/* Mounted only while the lightbox is open. Unmounting destroys
+                  the player, which is what stops playback on close. YouTube
+                  draws its own controls, so no overlay button here. */}
+              <iframe
+                className="lightbox__video-frame"
+                src={`https://www.youtube.com/embed/${lightbox.youtubeId}?autoplay=1&playsinline=1&rel=0&modestbranding=1`}
+                title={lightbox.alt}
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
               />
-              {/* Play/Pause overlay inside lightbox */}
-              <button
-                type="button"
-                className={`lightbox__video-btn${isPlaying ? " is-playing" : ""}`}
-                onClick={toggleLightboxVideo}
-                aria-label={isPlaying ? "Pausar vídeo" : "Reproduzir vídeo"}
-              >
-                {isPlaying ? (
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                    <circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.45)" />
-                    <rect x="15" y="13" width="6" height="22" rx="1.5" fill="rgba(255,255,255,0.9)" />
-                    <rect x="27" y="13" width="6" height="22" rx="1.5" fill="rgba(255,255,255,0.9)" />
-                  </svg>
-                ) : (
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                    <circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.45)" />
-                    <path d="M19 13V35L37 24L19 13Z" fill="rgba(255,255,255,0.9)" />
-                  </svg>
-                )}
-              </button>
             </div>
           ) : (
             <img
-              src={lightboxSrc}
-              alt={lightboxAlt}
+              src={lightbox.src}
+              alt={lightbox.alt}
               className="lightbox__img"
               onClick={(e) => e.stopPropagation()}
             />
