@@ -529,54 +529,130 @@ nav .jtp-desktop-inner {
     linear-gradient(
       to top,
       transparent 0%,
-      black 15%,
-      black 90%,
+      black 6%,
+      black 92%,
       transparent 100%
     );
   mask-composite: intersect;
   -webkit-mask-composite: source-in;
 }
 
-@media (min-width: 1024px) {
-  .hero-desktop-content {
-    align-items: flex-start;
-    padding-top: 4.5rem;
-  }
-
-  .hero-desktop-media {
-    top: 4.5rem;
-    bottom: auto;
-  }
+/* Sem header fixo: a hero começa no topo absoluto da viewport e a imagem
+   preenche toda a altura (sem faixa vazia no rodapé). O recorte horizontal
+   (object-position) empurra o corpo para a direita, longe da coluna de texto. */
+.hero-desktop-media {
+  top: auto;
+  bottom: 0;
+  /* sangria à direita: empurra o corpo para longe da coluna de texto
+     (a faixa que sai da tela é só fumaça de fundo) */
+  right: -6%;
+  /* 84% da largura preenche o rodapé; o teto em vh (altura = 9/16 da
+     largura) impede que o topo da cabeça seja cortado em telas baixas */
+  width: min(84%, 172vh);
+  height: auto;
+  max-width: none;
 }
 
-.hero-image-mask-mobile {
-  mask-image: linear-gradient(
-      transparent 0%,
-      black 10%,
-      black 85%,
-      transparent 100%
-    ),
-    linear-gradient(
-      to right,
-      transparent 0%,
-      black 10%,
-      black 90%,
-      transparent 100%
-    );
-  mask-composite: intersect;
-  -webkit-mask-composite: source-in;
+.hero-desktop-content {
+  padding-block: 2rem;
 }
 
+/* ============================================
+   HERO — MOBILE / TABLET (< 1024px)
+   ============================================ */
+.hero-mobile {
+  /* Medidas-base da composição. A foto também é limitada por vh para que,
+     em telas baixas, o CTA continue o mais perto possível da dobra. */
+  --hero-photo-w: min(78vw, 31vh, 20rem);
+  --hero-logo-w: min(68vw, 16rem);
+  /* faixa reservada para o botão flutuante do WhatsApp (4rem do ícone +
+     1.5rem de offset + folga): o CTA nunca fica atrás dele */
+  padding-top: 0;
+  padding-bottom: 6.5rem;
+}
+
+.hero-mobile-photo {
+  position: relative;
+  /* cria contexto de empilhamento: mantém o brilho (z-index: -1) atrás da
+     foto, mas à frente do fundo da página */
+  z-index: 1;
+  width: var(--hero-photo-w);
+  /* corta a área transparente acima da cabeça (o recorte só começa em ~22%
+     da altura = 33% da largura), aproximando o rosto do topo da tela */
+  margin-top: calc(var(--hero-photo-w) * -0.26);
+}
+
+.hero-mobile-photo__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* funde a base do recorte com o fundo escuro */
+  mask-image: linear-gradient(to bottom, black 62%, transparent 96%);
+}
+
+/* brilho radial de marca atrás do recorte (centralizado sem transform, para
+   não conflitar com o scale de .pulse-glow) */
+.hero-mobile-glow {
+  position: absolute;
+  z-index: -1;
+  top: -4%;
+  left: 0;
+  right: 0;
+  width: 140%;
+  aspect-ratio: 1;
+  margin-inline: auto;
+  background: hsl(210 70.2% 50% / 0.3);
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.hero-mobile-content {
+  position: relative;
+  /* acima da foto: a logo sobrepõe o recorte na altura do peito */
+  z-index: 2;
+  width: 100%;
+  max-width: 34rem;
+  /* sobe o conjunto logo + textos: a metade da altura da logo cai sobre a
+     faixa do peito, abaixo do ponto onde o recorte começa a sumir */
+  margin-top: calc(var(--hero-photo-w) * -0.26 - var(--hero-logo-w) * 0.19);
+}
+
+.hero-mobile-logo {
+  display: block;
+  width: var(--hero-logo-w);
+  height: auto;
+  margin-inline: auto;
+}
+
+.hero-mobile-title {
+  margin-top: 0.55rem;
+  font-size: clamp(1.95rem, 8.8vw, 2.5rem);
+  line-height: 1.06;
+}
+
+/* Linha única obrigatória: o piso do clamp é o maior tamanho que cabe em
+   320px sem quebrar/estourar. */
 .hero-mobile-equation {
-  font-size: clamp(0.82rem, 3.55vw, 1rem);
+  margin-top: 0.6rem;
+  font-size: clamp(0.82rem, 4.1vw, 1.5rem);
   line-height: 1.35;
   white-space: nowrap;
 }
 
+.hero-mobile-description {
+  margin-top: 0.6rem;
+  margin-inline: auto;
+  max-width: 32rem;
+  font-size: clamp(0.9rem, 3.9vw, 1.125rem);
+  line-height: 1.5;
+}
+
 .hero-mobile-cta {
+  margin-top: 0.9rem;
   width: 100%;
   max-width: 21rem;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   font-size: clamp(0.78rem, 3.45vw, 0.95rem);
   white-space: nowrap;
 }

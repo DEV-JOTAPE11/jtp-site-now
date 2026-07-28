@@ -55,9 +55,7 @@ const DIFFERENTIALS = [
 function scrollToFormulario() {
   const target = document.getElementById("formulario");
   if (!target) return;
-  const offset = window.innerWidth >= 1024 ? 72 : 64;
-  const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-  window.scrollTo({ top, behavior: "smooth" });
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* ─── Mobile Carousel ─── */

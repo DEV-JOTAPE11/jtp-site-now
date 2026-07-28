@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Navbar } from "@/components/layout/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { Differentials } from "@/components/sections/Differentials";
 import { Testimonials } from "@/components/sections/Testimonials";
@@ -30,8 +29,9 @@ const FloatingWhatsApp = dynamic(
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
+      {/* Navbar removida do site (componente mantido em
+          components/layout/Navbar.tsx para rollback). */}
       <ParticlesCanvas />
-      <Navbar />
       <Hero />
       <Differentials />
       <Testimonials />
