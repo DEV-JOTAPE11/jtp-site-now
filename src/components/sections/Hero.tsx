@@ -89,7 +89,7 @@ export function Hero() {
           <div style={{ maxWidth: "42rem" }}>
             <div className="mb-6 flex justify-center">
               <Image
-                src="/img/logo-hero-name.png"
+                src="/img/logo-hero-name.svg"
                 alt="Ascensão Company"
                 width={520}
                 height={180}
@@ -209,7 +209,7 @@ export function Hero() {
           <div className="relative z-10">
             <div className="mb-4 flex justify-center">
               <Image
-                src="/img/logo-hero-name.png"
+                src="/img/logo-hero-name.svg"
                 alt="Ascensão Company"
                 width={320}
                 height={110}
