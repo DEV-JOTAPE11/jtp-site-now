@@ -563,7 +563,9 @@ nav .jtp-desktop-inner {
 .hero-mobile {
   /* Medidas-base da composição. A foto também é limitada por vh para que,
      em telas baixas, o CTA continue o mais perto possível da dobra. */
-  --hero-photo-w: min(78vw, 31vh, 20rem);
+  /* a foto ultrapassa a largura da tela de propósito: os ombros chegam às
+     laterais e o excedente é cortado pelo overflow:hidden da <section> */
+  --hero-photo-w: min(104vw, 42vh, 26rem);
   --hero-logo-w: min(68vw, 16rem);
   /* faixa reservada para o botão flutuante do WhatsApp (4rem do ícone +
      1.5rem de offset + folga): o CTA nunca fica atrás dele */
@@ -579,7 +581,7 @@ nav .jtp-desktop-inner {
   width: var(--hero-photo-w);
   /* corta a área transparente acima da cabeça (o recorte só começa em ~22%
      da altura = 33% da largura), aproximando o rosto do topo da tela */
-  margin-top: calc(var(--hero-photo-w) * -0.26);
+  margin-top: calc(var(--hero-photo-w) * -0.3);
 }
 
 .hero-mobile-photo__img {
@@ -587,7 +589,7 @@ nav .jtp-desktop-inner {
   width: 100%;
   height: auto;
   /* funde a base do recorte com o fundo escuro */
-  mask-image: linear-gradient(to bottom, black 62%, transparent 96%);
+  mask-image: linear-gradient(to bottom, black 74%, transparent 98%);
 }
 
 /* brilho radial de marca atrás do recorte (centralizado sem transform, para
@@ -627,15 +629,15 @@ nav .jtp-desktop-inner {
 
 .hero-mobile-title {
   margin-top: 0.55rem;
-  font-size: clamp(1.95rem, 8.8vw, 2.5rem);
-  line-height: 1.06;
+  font-size: clamp(1.35rem, 6.2vw, 1.75rem);
+  line-height: 1.1;
 }
 
 /* Linha única obrigatória: o piso do clamp é o maior tamanho que cabe em
    320px sem quebrar/estourar. */
 .hero-mobile-equation {
   margin-top: 0.6rem;
-  font-size: clamp(0.82rem, 4.1vw, 1.5rem);
+  font-size: clamp(0.82rem, 4.1vw, 1.15rem);
   line-height: 1.35;
   white-space: nowrap;
 }

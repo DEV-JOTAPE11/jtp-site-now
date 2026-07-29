@@ -149,7 +149,7 @@ export function Hero() {
         <div className="hero-mobile-photo">
           <div className="hero-mobile-glow pulse-glow" aria-hidden="true" />
           <Image
-            src="/img/imagem-hero-mobile.svg"
+            src="/img/new-hero-abstract.svg"
             alt="João Pedro, fundador da JTP Services"
             width={800}
             height={1200}
