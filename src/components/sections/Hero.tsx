@@ -123,9 +123,12 @@ export function Hero() {
 
             <ScrollReveal delay={0.3}>
               <div className="mb-6">
-                <button className="btn-cta glow-blue" onClick={scrollToFormulario}>
+                <button
+                  className="btn-cta btn-cta-whatsapp glow-whatsapp"
+                  onClick={scrollToFormulario}
+                >
                   <WhatsAppIcon className="h-5 w-5" />
-                  SOLICITAR DIAGNÓSTICO GRATUITO
+                  FALE CONOSCO!
                 </button>
               </div>
             </ScrollReveal>
@@ -194,11 +197,11 @@ export function Hero() {
 
           <ScrollReveal delay={0.3}>
             <button
-              className="btn-cta glow-blue hero-mobile-cta"
+              className="btn-cta btn-cta-whatsapp glow-whatsapp hero-mobile-cta"
               onClick={scrollToFormulario}
             >
               <WhatsAppIcon className="h-5 w-5" />
-              Solicitar diagnóstico gratuito
+              FALE CONOSCO!
             </button>
           </ScrollReveal>
         </div>

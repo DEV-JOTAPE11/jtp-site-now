@@ -176,6 +176,17 @@ select {
   transform: translateX(100%);
 }
 
+/* Variante verde (WhatsApp) do CTA principal */
+.btn-cta-whatsapp {
+  background: linear-gradient(to right, #128c4a, #25d366);
+  border-color: rgba(37, 211, 102, 0.45);
+}
+
+.btn-cta-whatsapp:hover {
+  box-shadow: 0 10px 32px rgba(37, 211, 102, 0.4),
+    0 0 24px rgba(37, 211, 102, 0.28);
+}
+
 /* ============================================
    DIFFERENTIALS BUTTON
    ============================================ */
@@ -224,6 +235,18 @@ select {
 }
 
 /* ============================================
+   GLOW WHATSAPP (pulsante)
+   ============================================ */
+.glow-whatsapp {
+  animation: whatsapp-glow 2.4s ease-in-out infinite;
+}
+
+/* O hover assume o box-shadow; sem isso a animação continuaria por cima. */
+.glow-whatsapp:hover {
+  animation: none;
+}
+
+/* ============================================
    TEXT GRADIENTS
    ============================================ */
 .text-gradient {
@@ -269,6 +292,18 @@ select {
   }
   50% {
     transform: translateY(-20px);
+  }
+}
+
+@keyframes whatsapp-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 16px rgba(37, 211, 102, 0.3),
+      0 0 34px rgba(37, 211, 102, 0.14);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(37, 211, 102, 0.7),
+      0 0 62px rgba(37, 211, 102, 0.36);
   }
 }
 
@@ -652,9 +687,9 @@ nav .jtp-desktop-inner {
 
 .hero-mobile-cta {
   margin-top: 0.9rem;
-  width: 100%;
-  max-width: 21rem;
-  padding: 0.85rem 1rem;
+  width: auto;
+  max-width: 100%;
+  padding: 0.85rem 1.6rem;
   font-size: clamp(0.78rem, 3.45vw, 0.95rem);
   white-space: nowrap;
 }

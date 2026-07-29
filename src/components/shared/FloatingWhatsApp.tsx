@@ -11,7 +11,7 @@ export function FloatingWhatsApp() {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="whatsapp-float fixed z-50 group"
+      className="whatsapp-float hidden lg:block fixed z-50 group"
       style={{ bottom: "1.5rem", right: "1.5rem" }}
       aria-label="Fale conosco no WhatsApp"
     >
