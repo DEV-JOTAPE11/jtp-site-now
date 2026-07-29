@@ -279,7 +279,7 @@ export function Differentials() {
                 <div className="absolute inset-0 bg-primary/20 animate-pulse blur-md" />
                 <div className="relative bg-background/90 backdrop-blur-2xl rounded-2xl p-8 md:p-10 flex flex-col items-center justify-center gap-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
                   <div className="text-center w-full">
-                    <h3 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-display)] text-foreground whitespace-nowrap overflow-hidden text-ellipsis">
+                    <h3 className="text-xl md:text-2xl font-bold font-[family-name:var(--font-display)] text-foreground whitespace-nowrap overflow-hidden text-ellipsis">
                       Descubra em 2 minutos quanto sua empresa está perdendo sem
                       estratégia digital!
                     </h3>
