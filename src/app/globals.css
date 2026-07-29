@@ -1006,6 +1006,37 @@ nav .jtp-desktop-inner {
   }
 }
 
+/* Chips de filtro da página de portfólio: mesmo fundo dos botões da seção
+   (o gradiente do .btn-cta, replicado aqui). Fundo, cor e borda precisam ser
+   declarados nesta regra porque o reset `button { background: none; border:
+   none; color: inherit }` está fora de @layer e vence as utilities. */
+/* Selecionado: o azul dos botões da seção. */
+.portfolio-filter {
+  background: linear-gradient(to right, #2680d9, #3d9eff);
+  border: 1px solid rgba(235, 243, 255, 0.55);
+  color: var(--color-primary-foreground);
+}
+
+.portfolio-filter[aria-selected="true"]:hover {
+  filter: brightness(1.08);
+}
+
+/* Não selecionado: contorno azul e vidro por dentro (mesma receita do
+   .glass-card, sem o box-shadow pesado). */
+.portfolio-filter[aria-selected="false"] {
+  background: rgba(7, 20, 39, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(61, 158, 255, 0.5);
+  box-shadow: inset 0 1px 0 rgba(235, 243, 255, 0.08),
+    0 8px 24px rgba(2, 8, 23, 0.35);
+}
+
+.portfolio-filter[aria-selected="false"]:hover {
+  background: rgba(7, 20, 39, 0.72);
+  border-color: rgba(61, 158, 255, 0.8);
+}
+
 /* Setas do carrossel mobile. `.glass-card` e o reset de `button` estão fora de
    @layer, então venceriam `rounded-full`, `text-primary` e `hover:bg-*` das
    utilities — raio, cor e hover ficam declarados aqui. */

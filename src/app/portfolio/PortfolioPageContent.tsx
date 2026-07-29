@@ -85,20 +85,16 @@ export function PortfolioPageContent() {
                     aria-selected={isActive}
                     onClick={() => setFilter(category)}
                     className={cn(
-                      "flex h-10 items-center gap-2 rounded-full border px-5 text-sm font-semibold transition-all duration-300",
+                      "portfolio-filter flex h-10 items-center gap-2 rounded-full px-5 text-sm font-semibold transition-all duration-300",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7eb8ff]/50",
-                      isActive
-                        ? "scale-105 border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                        : "border-primary/20 bg-background/40 backdrop-blur-sm text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                      isActive && "scale-105 glow-blue"
                     )}
                   >
                     {category}
                     <span
                       className={cn(
-                        "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold transition-colors",
-                        isActive
-                          ? "bg-background/20 text-primary-foreground"
-                          : "bg-primary/10 text-primary"
+                        "flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold text-primary-foreground transition-colors",
+                        isActive ? "bg-background/30" : "bg-primary/30"
                       )}
                     >
                       {countProjectsByFilter(category)}
