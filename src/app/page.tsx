@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Hero } from "@/components/sections/Hero";
 import { Differentials } from "@/components/sections/Differentials";
 import { Testimonials } from "@/components/sections/Testimonials";
+import { Portfolio } from "@/components/sections/Portfolio";
 import { Services } from "@/components/sections/Services";
 import { Comparison } from "@/components/sections/Comparison";
 import { AIAgent } from "@/components/sections/AIAgent";
@@ -35,6 +36,7 @@ export default function Home() {
       <Hero />
       <Differentials />
       <Testimonials />
+      <Portfolio />
       <Services />
       <Comparison />
       <AIAgent />

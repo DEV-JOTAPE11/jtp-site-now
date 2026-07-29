@@ -957,6 +957,95 @@ nav .jtp-desktop-inner {
 }
 
 /* ============================================
+   PORTFOLIO — PRINT ROLÁVEL DENTRO DO CARD
+   O card exibe a screenshot full-page (alguns milhares de px de altura) dentro
+   de uma caixa baixa: quem rola é o próprio container, com scroll nativo.
+   `overscroll-contain` impede que o scroll "vaze" para a página e `pan-y`
+   garante o arrasto no touch.
+   ============================================ */
+.portfolio-preview-scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) rgba(7, 20, 39, 0.72);
+  scrollbar-gutter: stable;
+}
+
+.portfolio-preview-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.portfolio-preview-scroll::-webkit-scrollbar-track {
+  background: rgba(7, 20, 39, 0.72);
+  border-radius: 999px;
+}
+
+.portfolio-preview-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3d9eff, var(--color-primary));
+  border: 2px solid rgba(7, 20, 39, 0.9);
+  border-radius: 999px;
+}
+
+.portfolio-preview-scroll::-webkit-scrollbar-thumb:hover {
+  background: #3d9eff;
+}
+
+/* Mobile: barra oculta — o arrasto continua rolando o print normalmente. */
+@media (max-width: 767px) {
+  .portfolio-preview-scroll {
+    scrollbar-width: none;
+  }
+
+  .portfolio-preview-scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+  }
+}
+
+/* Setas do carrossel mobile. `.glass-card` e o reset de `button` estão fora de
+   @layer, então venceriam `rounded-full`, `text-primary` e `hover:bg-*` das
+   utilities — raio, cor e hover ficam declarados aqui. */
+.portfolio-nav-button {
+  border-radius: 9999px;
+  color: var(--color-primary);
+}
+
+.portfolio-nav-button:hover:not(:disabled) {
+  color: var(--color-cta);
+  background: hsl(210 70.2% 50% / 0.16);
+}
+
+.portfolio-scroll-hint {
+  animation: portfolio-hint-float 1.9s ease-in-out infinite;
+}
+
+@keyframes portfolio-hint-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.72;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-preview-scroll {
+    scroll-behavior: auto;
+  }
+
+  .portfolio-scroll-hint {
+    animation: none;
+  }
+}
+
+/* ============================================
    FOOTER GRID
    ============================================ */
 .footer-grid {
