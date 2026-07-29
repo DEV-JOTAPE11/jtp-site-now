@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PortfolioPreviewCard } from "@/components/portfolio/PortfolioPreviewCard";
@@ -24,12 +24,19 @@ export function PortfolioGrid({
   className,
 }: PortfolioGridProps) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const isHome = variant === "home";
 
   /* Se a lista encolher (filtro), o índice é limitado durante a renderização —
      sem efeito extra só para corrigir estado. */
   const safeActiveIndex = Math.min(activeIndex, Math.max(projects.length - 1, 0));
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const scrollToProject = useCallback(
     (nextIndex: number) => {
@@ -52,17 +59,47 @@ export function PortfolioGrid({
     [projects.length]
   );
 
+  /* Card mais próximo do centro = card ativo (throttle por rAF). */
+  const handleTrackScroll = useCallback(() => {
+    if (rafRef.current !== null) return;
+
+    rafRef.current = requestAnimationFrame(() => {
+      const track = trackRef.current;
+      if (!track) {
+        rafRef.current = null;
+        return;
+      }
+
+      const trackCenter = track.scrollLeft + track.clientWidth / 2;
+      let closestIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      Array.from(track.children).forEach((child, index) => {
+        const card = child as HTMLElement;
+        const cardCenter = card.offsetLeft + card.clientWidth / 2;
+        const distance = Math.abs(cardCenter - trackCenter);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+
+      setActiveIndex((current) =>
+        current === closestIndex ? current : closestIndex
+      );
+      rafRef.current = null;
+    });
+  }, []);
+
   return (
     <div className={cn(isHome && "relative mx-auto max-w-6xl")}>
-      {/* `overflow-x-hidden` tira o arrasto lateral do trilho: o card não sai
-          mais do lugar sozinho e a troca acontece só pelas setas, que rolam o
-          trilho por código (scrollTo continua funcionando com overflow hidden).
-          A partir de md vira grid e nada disso se aplica. */}
       <div
         ref={isHome ? trackRef : undefined}
+        onScroll={isHome ? handleTrackScroll : undefined}
         className={cn(
           isHome
-            ? "-mx-2 flex snap-x snap-mandatory gap-4 overflow-x-hidden scroll-smooth px-2 pb-2 md:mx-0 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3"
+            ? "-mx-2 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-2 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3"
             : "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3",
           className
         )}
