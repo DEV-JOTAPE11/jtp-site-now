@@ -7,7 +7,6 @@ import { Testimonials } from "@/components/sections/Testimonials";
 import { Portfolio } from "@/components/sections/Portfolio";
 import { Services } from "@/components/sections/Services";
 import { Comparison } from "@/components/sections/Comparison";
-import { AIAgent } from "@/components/sections/AIAgent";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/layout/Footer";
 
@@ -39,7 +38,9 @@ export default function Home() {
       <Portfolio />
       <Services />
       <Comparison />
-      <AIAgent />
+      {/* Seção "Agente de Inteligência Artificial" removida do site
+          (componente mantido em components/sections/AIAgent.tsx para
+          rollback). */}
       <Contact />
       <Footer />
       <FloatingWhatsApp />

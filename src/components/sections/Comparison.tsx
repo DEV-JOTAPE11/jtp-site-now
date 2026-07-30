@@ -1,43 +1,69 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Crown, PenTool, TrendingUp, Clapperboard, Target } from "lucide-react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  Check,
+  Clapperboard,
+  Crown,
+  PenTool,
+  Target,
+  TrendingUp,
+} from "lucide-react";
 import { ScrollReveal } from "@/components/shared/ScrollReveal";
-import { COUNTER_TARGET } from "@/lib/constants";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 const PROFESSIONALS = [
   {
     icon: Crown,
     title: "Líder de Vendas",
-    description: "Para liderar, conduzir e treinar o time de vendas",
-    price: "R$ 5.000,00/mês",
+    description: "Lidera, conduz e treina o time de vendas",
+    price: "R$ 5.000/mês",
   },
   {
     icon: PenTool,
     title: "Redator de Publicidade",
-    description: "Responsável por escrever textos persuasivos",
-    price: "R$ 3.500,00/mês",
+    description: "Escreve os textos que fazem o lead comprar",
+    price: "R$ 3.500/mês",
   },
   {
     icon: TrendingUp,
     title: "Gestor de Tráfego",
-    description: "Para fazer seus anúncios patrocinados na internet",
-    price: "R$ 2.500,00/mês",
+    description: "Coloca seus anúncios na frente de quem compra",
+    price: "R$ 2.500/mês",
   },
   {
     icon: Clapperboard,
     title: "Editor de Vídeo",
-    description: "Para editar seus vídeos e aumentar o engajamento do público",
-    price: "R$ 2.500,00/mês",
+    description: "Transforma seus vídeos em engajamento",
+    price: "R$ 2.500/mês",
   },
   {
     icon: Target,
     title: "Gestor de Projetos",
-    description:
-      "O responsável por tomar conta de todo o projeto e liderar todo esse time",
-    price: "R$ 7.500,00/mês",
+    description: "Comanda o time e garante a entrega",
+    price: "R$ 7.500/mês",
   },
 ];
+
+const JTP_DELIVERS = [
+  "As 5 funções, já operando",
+  "Zero encargos, zero rescisão, zero processo",
+  "Time rodando na sua conta em dias, não em meses",
+  "Se não der certo, você cancela — não demite",
+];
+
+/* Tile de ícone (mesmo tratamento da seção de serviços, na versão premium):
+   quadrado arredondado, gradiente do accent para o fundo, borda mais viva no
+   topo e um único glow externo — que intensifica no hover do card. */
+const ICON_TILE = [
+  "relative flex h-14 w-14 md:h-16 md:w-16 shrink-0 items-center justify-center rounded-[18px]",
+  "border border-[rgba(61,158,255,0.18)] [border-top-color:rgba(61,158,255,0.45)]",
+  "bg-[linear-gradient(180deg,rgba(61,158,255,0.18)_0%,rgba(61,158,255,0.05)_55%,var(--color-background)_100%)]",
+  "shadow-[0_0_20px_rgba(61,158,255,0.16)]",
+  "transition-[box-shadow,border-color] duration-300 ease-out",
+  "group-hover:border-[rgba(61,158,255,0.3)] group-hover:[border-top-color:rgba(61,158,255,0.65)]",
+  "group-hover:shadow-[0_0_28px_rgba(61,158,255,0.3)]",
+].join(" ");
 
 function scrollToFormulario() {
   const target = document.getElementById("formulario");
@@ -45,48 +71,62 @@ function scrollToFormulario() {
   target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-export function Comparison() {
-  const [counterValue, setCounterValue] = useState(0);
-  const counterRef = useRef<HTMLSpanElement>(null);
-  const hasAnimated = useRef(false);
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeReducedMotion(onChange: () => void) {
+  const query = window.matchMedia(REDUCED_MOTION_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+/* Lido do próprio media query (e não de um estado setado em efeito), para que
+   o primeiro render já saiba se deve animar. No servidor assume "pode animar". */
+function useReducedMotion() {
+  return useSyncExternalStore(
+    subscribeReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
+    () => false
+  );
+}
+
+/* Dispara uma única vez quando ~30% do elemento entra na viewport.
+   O observer fica no bloco que anima (grid / bloco de custo), não na <section>:
+   a seção é mais alta que a viewport no mobile, onde 30% dela nunca fica
+   visível de uma vez e o gatilho jamais aconteceria. */
+function useInViewOnce<T extends HTMLElement>(threshold = 0.3) {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
 
   useEffect(() => {
-    const el = counterRef.current;
+    const el = ref.current;
     if (!el) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting || hasAnimated.current) return;
-          hasAnimated.current = true;
-
-          const duration = 2000;
-          const startTime = performance.now();
-
-          const tick = (currentTime: number) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const current = Math.floor(COUNTER_TARGET * eased);
-            setCounterValue(current);
-
-            if (progress < 1) {
-              requestAnimationFrame(tick);
-            } else {
-              setCounterValue(COUNTER_TARGET);
-            }
-          };
-
-          requestAnimationFrame(tick);
-          observer.unobserve(entry.target);
-        });
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        setInView(true);
+        observer.disconnect();
       },
-      { threshold: 0.5 }
+      { threshold }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [threshold]);
+
+  return { ref, inView };
+}
+
+export function Comparison() {
+  const reduced = useReducedMotion();
+  const { ref: gridRef, inView: gridInView } = useInViewOnce<HTMLUListElement>();
+
+  /* Cascata dos selos: 100ms de atraso entre cards. Com reduced motion, o
+     estado final entra de uma vez. */
+  const cascade = (index: number) => ({
+    transitionDelay: reduced ? "0ms" : `${index * 100}ms`,
+    transitionDuration: reduced ? "0ms" : "400ms",
+  });
 
   return (
     <section id="comparativo" className="py-20 md:py-32 px-4 relative">
@@ -118,61 +158,143 @@ export function Comparison() {
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <ScrollReveal className="text-center mb-14">
-          <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-3">
-            Quais profissionais você precisa{" "}
-            <span className="hero-text-gradient">para executar este plano?</span>
+        <ScrollReveal className="text-center mb-12 md:mb-14">
+          <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-3 text-balance">
+            Você não precisa de uma agência. Precisa de{" "}
+            <span className="hero-text-gradient">um time de 5 pessoas</span>.
           </h2>
-          <p className="text-muted-foreground text-lg">
-            Quanto você paga por cada um deles{" "}
-            <strong className="text-foreground">NO MERCADO</strong>?
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Veja quanto custa montar esse time sozinho — e por que quase ninguém
+            consegue.
           </p>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mb-14">
+        {/* ── Os 5 profissionais ── */}
+        <ul
+          ref={gridRef}
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-10 md:mb-14"
+        >
           {PROFESSIONALS.map((prof, index) => (
-            <ScrollReveal key={prof.title} delay={index * 0.1}>
-              <div className="text-center group">
-                <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-secondary/60 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-all duration-300">
-                  <prof.icon
-                    className="w-10 h-10 md:w-12 md:h-12 text-muted-foreground group-hover:text-primary transition-colors duration-300"
-                    style={{ opacity: 0.6 }}
-                  />
-                </div>
-                <h4 className="font-bold font-[family-name:var(--font-display)] text-sm md:text-base mb-1">
-                  {prof.title}
-                </h4>
-                <p className="text-muted-foreground text-xs mb-2 leading-relaxed">
-                  {prof.description}
-                </p>
-                <p className="text-primary font-bold text-sm">{prof.price}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
+            <li
+              key={prof.title}
+              className={`list-none ${
+                index === PROFESSIONALS.length - 1
+                  ? "col-span-2 sm:col-span-1"
+                  : ""
+              }`}
+            >
+              <ScrollReveal delay={index * 0.1} className="h-full">
+                <div className="glass-card group relative flex h-full flex-col items-center overflow-hidden px-3 pb-5 pt-10 md:px-4 md:pb-6 md:pt-11 text-center transition-colors duration-300 hover:bg-[rgba(7,20,39,0.8)]">
+                  {/* Selo: entra em cascata quando o grid aparece */}
+                  <span
+                    className="absolute right-2.5 top-2.5 inline-flex items-center gap-1 rounded-full border border-[rgba(61,158,255,0.28)] bg-[rgba(61,158,255,0.1)] px-2 py-[3px] text-[0.6875rem] font-semibold leading-none text-cta transition-all ease-out"
+                    style={{
+                      opacity: gridInView ? 1 : 0,
+                      transform: gridInView
+                        ? "translateY(0)"
+                        : "translateY(-4px)",
+                      ...cascade(index),
+                    }}
+                  >
+                    <Check className="h-3 w-3" strokeWidth={1.5} aria-hidden />
+                    já incluído
+                  </span>
 
-        <ScrollReveal direction="scale">
-          <div className="max-w-lg mx-auto">
-            <div className="glass-card gradient-border p-10 text-center">
-              <p className="text-lg md:text-xl font-[family-name:var(--font-display)] font-semibold mb-2 text-muted-foreground">
-                Total se você contratar tudo separado:
-              </p>
-              <p className="text-4xl md:text-5xl font-bold font-[family-name:var(--font-display)] text-primary mb-1">
-                <span ref={counterRef}>
-                  R$ {counterValue.toLocaleString("pt-BR")}
-                </span>
-                <span className="text-lg text-muted-foreground">/mês</span>
-              </p>
-              <p className="text-muted-foreground text-sm mb-6">
-                Com a Ascensão, você tem uma assessoria completa que atua em
-                todas essas frentes por um investimento muito menor.
-              </p>
-              <button className="btn-cta glow-blue w-full" onClick={scrollToFormulario}>
-                QUERO MAIS INFORMAÇÕES
-              </button>
+                  <div className={ICON_TILE}>
+                    <prof.icon
+                      className="h-[26px] w-[26px] text-cta"
+                      strokeWidth={1.5}
+                      aria-hidden
+                    />
+                  </div>
+
+                  <h3 className="mt-4 text-sm md:text-base font-bold font-[family-name:var(--font-display)]">
+                    {prof.title}
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                    {prof.description}
+                  </p>
+
+                  {/* Preço: risca e esvanece junto do selo */}
+                  <p
+                    className={`mt-auto pt-3 text-sm md:text-[0.95rem] font-bold transition-colors ease-out ${
+                      gridInView ? "text-muted-foreground" : "text-cta"
+                    }`}
+                    style={cascade(index)}
+                  >
+                    <span className="relative inline-block">
+                      {prof.price}
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute left-0 top-1/2 h-[1.5px] w-full origin-left rounded-full bg-current transition-transform ease-out"
+                        style={{
+                          transform: gridInView ? "scaleX(1)" : "scaleX(0)",
+                          ...cascade(index),
+                        }}
+                      />
+                    </span>
+                  </p>
+                </div>
+              </ScrollReveal>
+            </li>
+          ))}
+        </ul>
+
+        {/* ── Resolução + CTA: card único, centralizado ── */}
+        <div className="mx-auto max-w-3xl">
+          <ScrollReveal>
+            <div className="relative rounded-[1.25rem] border border-[rgba(40,126,215,0.2)] p-2 md:rounded-[1.5rem] md:p-3">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+                borderWidth={3}
+                variant="brand"
+              />
+              <div className="glass-card relative z-10 flex h-full flex-col overflow-hidden p-6 md:p-8">
+                <h3 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-display)] text-balance">
+                  Com a JTP, você contrata{" "}
+                  <span className="hero-text-gradient">um time</span>. Não cinco
+                  pessoas.
+                </h3>
+
+                <ul className="mt-6 space-y-3.5">
+                  {JTP_DELIVERS.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-3 text-sm md:text-base text-foreground"
+                    >
+                      <span className="mt-px flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[rgba(61,158,255,0.3)] bg-[rgba(61,158,255,0.12)]">
+                        <Check
+                          className="h-3 w-3 text-cta"
+                          strokeWidth={1.5}
+                          aria-hidden
+                        />
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-auto pt-8">
+                  <button
+                    type="button"
+                    className="btn-cta glow-blue w-full"
+                    onClick={scrollToFormulario}
+                  >
+                    Quero saber mais
+                  </button>
+                  <p className="mt-3 text-center text-xs text-muted-foreground">
+                    Diagnóstico gratuito. Em 15 minutos você sai com o número na
+                    mão.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
+        </div>
       </div>
     </section>
   );
