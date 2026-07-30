@@ -8,6 +8,7 @@ import { Portfolio } from "@/components/sections/Portfolio";
 import { Services } from "@/components/sections/Services";
 import { Comparison } from "@/components/sections/Comparison";
 import { Contact } from "@/components/sections/Contact";
+import { FAQ } from "@/components/sections/FAQ";
 import { Footer } from "@/components/layout/Footer";
 
 const ParticlesCanvas = dynamic(
@@ -42,6 +43,7 @@ export default function Home() {
           (componente mantido em components/sections/AIAgent.tsx para
           rollback). */}
       <Contact />
+      <FAQ />
       <Footer />
       <FloatingWhatsApp />
     </main>
