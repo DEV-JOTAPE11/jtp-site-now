@@ -53,9 +53,9 @@ const CHEVRON_TILE = [
 ].join(" ");
 
 export function FAQ() {
-  /* Índice 0 já aberto: a resposta sobre preço é a que todo visitante procura,
-     então ela precisa ser lida sem exigir clique. `null` = tudo fechado. */
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  /* Todos os cards começam fechados (`null`): a seção abre compacta e o
+     visitante escolhe a objeção dele. Um índice = aquele card aberto. */
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     FAQ_WHATSAPP_MESSAGE

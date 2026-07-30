@@ -1,6 +1,8 @@
 import type { NavItem, SelectOption } from "@/types";
 
-export const WHATSAPP_NUMBER = "5575981401481";
+/* Número único do projeto: Contact, FAQ e o botão flutuante todos importam
+   daqui — não repita o literal em componente nenhum. */
+export const WHATSAPP_NUMBER = "5538999743350";
 export const WHATSAPP_DEFAULT_MESSAGE =
   "Vim pelo site, tenho interesse e gostaria de mais informações.";
 
