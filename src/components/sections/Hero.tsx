@@ -36,6 +36,19 @@ export function Hero() {
             width={1920}
             height={1080}
             className="absolute hero-image-mask hero-desktop-media"
+            /* Elemento LCP do desktop. O `fetchPriority` sozinho deixava em pé
+               o `loading="lazy"` padrão do next/image: prioridade alta e
+               carregamento adiado ao mesmo tempo, e o Lighthouse reprovava
+               ("os recursos do LCP não devem usar loading=lazy").
+
+               `loading="eager"` em vez de `priority` (deprecado no Next 16 em
+               favor de `preload`). Efeito colateral aceito: com eager o Next
+               injeta um <link rel=preload> no <head> — `preload={false}` não
+               suprime —, então o mobile, onde esta imagem fica em
+               display:none, passa a baixar o menor degrau do srcset (7,4 KB
+               AVIF, graças ao `1px` do `sizes`). Custo medido e validado
+               contra o alvo de não regredir o mobile. */
+            loading="eager"
             fetchPriority="high"
             sizes="(min-width: 1024px) 84vw, 1px"
           />
