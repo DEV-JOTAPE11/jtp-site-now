@@ -174,7 +174,7 @@ export function Testimonials() {
                     src={item.src}
                     alt={item.alt}
                     fill
-                    sizes="(max-width: 768px) 160px, 240px"
+                    sizes="(max-width: 767px) 160px, 240px"
                     className="fan-card__img"
                   />
                 </button>

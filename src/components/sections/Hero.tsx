@@ -177,7 +177,10 @@ export function Hero() {
             height={1200}
             className="hero-mobile-photo__img"
             priority
-            sizes="(max-width: 1023px) 26rem, 1px"
+            /* espelha o --hero-photo-w do CSS: declarar só o teto de 26rem
+               fazia o browser pedir o degrau de 750px quando a altura da tela
+               (42vh) é o limite real na maioria dos aparelhos. */
+            sizes="(max-width: 1023px) min(104vw, 42vh, 26rem), 1px"
           />
         </div>
 
