@@ -33,9 +33,23 @@ export function useParticlesCanvas(): void {
       const targetInterval = isMobile ? 1000 / 30 : 1000 / 45;
       let lastFrame = 0;
 
-      const resize = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = document.documentElement.scrollHeight;
+      /* O canvas cobre a página inteira (altura = scrollHeight, ~9400px no
+         desktop), mas só ~900px disso estão na tela. Redesenhar tudo a 45fps
+         custava ~84 mil pontos de path e um clear de 18 megapixels por frame
+         — a thread principal nunca ficava ociosa. Como o desenho é função
+         pura de (x, y, time), recortar para a faixa visível produz
+         exatamente os mesmos pixels onde o olho está.
+
+         Estas medidas ficam em cache e só são refeitas em resize: ler
+         getBoundingClientRect() por frame reintroduziria layout forçado. */
+      let canvasTop = 0;
+      let viewportHeight = window.innerHeight;
+      let scrollY = window.scrollY;
+
+      const measure = () => {
+        canvasTop = canvas.getBoundingClientRect().top + window.scrollY;
+        viewportHeight = window.innerHeight;
+        scrollY = window.scrollY;
       };
 
       const buildGlowPaths = (): GlowPath[] => {
@@ -66,39 +80,51 @@ export function useParticlesCanvas(): void {
         ];
       };
 
-      const update = (now: number) => {
-        if (disposed) return;
-
-        if (document.hidden) {
-          animationId = window.requestAnimationFrame(update);
-          return;
-        }
-
-        const delta = now - lastFrame;
-        if (delta < targetInterval) {
-          animationId = window.requestAnimationFrame(update);
-          return;
-        }
-        lastFrame = now - (delta % targetInterval);
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      /* Desenha o intervalo vertical [top, bottom) do canvas. Todos os
+         parâmetros visuais (step, gridSize, cores, opacidades, amplitudes,
+         número de orbs) são idênticos ao desenho de página inteira — o que
+         muda é só o recorte. O clip garante que nada pinte fora da área que
+         acabou de ser limpa, senão sobrariam rastros nas bordas. */
+      const draw = (rawTop: number, rawBottom: number) => {
+        /* Alinhar a faixa a pixels inteiros não é cosmético: com um rect
+           fracionário o Skia troca o clip rápido por um clip antisserrilhado
+           e passa a multiplicar a cobertura de tudo que é desenhado dentro,
+           o que muda alguns milhares de pixels das linhas translúcidas. Com
+           os limites inteiros o resultado é bit a bit idêntico ao desenho de
+           página inteira (verificado com getImageData). */
+        const top = Math.floor(rawTop);
+        const bottom = Math.ceil(rawBottom);
+        const bandHeight = bottom - top;
+        if (bandHeight <= 0) return;
 
         const gridSize = isMobile ? 160 : 120;
         const step = isMobile ? 8 : 4;
         const columns = Math.ceil(canvas.width / gridSize) + 2;
         const rows = Math.ceil(canvas.height / gridSize) + 2;
 
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, top, canvas.width, bandHeight);
+        ctx.clip();
+        ctx.clearRect(0, top, canvas.width, bandHeight);
+
+        /* Alinhar o início ao múltiplo de `step` faz a polilinha amostrar
+           exatamente os mesmos vértices do desenho completo; sem isso os
+           pontos sairiam deslocados e a onda mudaria de forma. */
+        const yStart = Math.max(0, Math.floor(top / step) * step - step);
+        const yEnd = Math.min(canvas.height, bottom + step);
+
         for (let col = 0; col <= columns; col += 1) {
           const baseX = col * gridSize;
           ctx.beginPath();
 
-          for (let y = 0; y <= canvas.height; y += step) {
+          for (let y = yStart; y <= yEnd; y += step) {
             const wave =
               Math.sin(y * 0.008 + time * 0.4 + col * 0.5) * 8 +
               Math.sin(y * 0.015 + time * 0.2 + col * 0.3) * 4;
             const x = baseX + wave;
 
-            if (y === 0) {
+            if (y === yStart) {
               ctx.moveTo(x, y);
             } else {
               ctx.lineTo(x, y);
@@ -110,7 +136,12 @@ export function useParticlesCanvas(): void {
           ctx.stroke();
         }
 
-        for (let row = 0; row <= rows; row += 1) {
+        /* Só as linhas horizontais cuja base cai na faixa. A folga de 16px
+           cobre a amplitude máxima da onda (8 + 4, arredondado para cima). */
+        const rowStart = Math.max(0, Math.floor((top - 16) / gridSize));
+        const rowEnd = Math.min(rows, Math.ceil((bottom + 16) / gridSize));
+
+        for (let row = rowStart; row <= rowEnd; row += 1) {
           const baseY = row * gridSize;
           ctx.beginPath();
 
@@ -133,6 +164,17 @@ export function useParticlesCanvas(): void {
         }
 
         buildGlowPaths().forEach((path, pathIndex) => {
+          /* Descarta o traçado inteiro quando ele não alcança a faixa. A
+             folga de 120px cobre o halo: shadowBlur 12 + o fillRect do
+             gradiente radial, que chega a raio*10 (~70px). */
+          let minY = Infinity;
+          let maxY = -Infinity;
+          for (const point of path.points) {
+            if (point.y < minY) minY = point.y;
+            if (point.y > maxY) maxY = point.y;
+          }
+          if (maxY + 120 < top || minY - 120 > bottom) return;
+
           const pulse = 0.5 + 0.5 * Math.sin(time * 1.2 + pathIndex * 1.8);
           const strokeOpacity = path.opacity * (0.6 + 0.4 * pulse);
 
@@ -211,6 +253,9 @@ export function useParticlesCanvas(): void {
         orbs.forEach((orb, index) => {
           const driftX = orb.cx + Math.sin(time * 0.2 + index * 1.5) * 40;
           const driftY = orb.cy + Math.cos(time * 0.15 + index * 1.2) * 30;
+
+          if (driftY + orb.r < top || driftY - orb.r > bottom) return;
+
           const radial = ctx.createRadialGradient(
             driftX,
             driftY,
@@ -233,21 +278,105 @@ export function useParticlesCanvas(): void {
           );
         });
 
+        ctx.restore();
+      };
+
+      /* Meio viewport de folga acima e abaixo: o que entra na tela durante o
+         scroll já foi pintado no frame anterior. */
+      const drawVisibleBand = () => {
+        const margin = viewportHeight * 0.5;
+        const offset = scrollY - canvasTop;
+        draw(
+          Math.max(0, offset - margin),
+          Math.min(canvas.height, offset + viewportHeight + margin)
+        );
+      };
+
+      const update = (now: number) => {
+        if (disposed) return;
+
+        const delta = now - lastFrame;
+        if (delta < targetInterval) {
+          animationId = window.requestAnimationFrame(update);
+          return;
+        }
+        lastFrame = now - (delta % targetInterval);
+
+        drawVisibleBand();
+
         time += 0.016;
-        if (reducedMotion) return;
         animationId = window.requestAnimationFrame(update);
       };
 
+      const startLoop = () => {
+        if (animationId || disposed || reducedMotion) return;
+        /* Recuar um intervalo faz o primeiro frame após a retomada desenhar
+           de imediato, sem esperar o throttle. */
+        lastFrame = performance.now() - targetInterval;
+        animationId = window.requestAnimationFrame(update);
+      };
+
+      const stopLoop = () => {
+        if (!animationId) return;
+        window.cancelAnimationFrame(animationId);
+        animationId = 0;
+      };
+
+      const resize = () => {
+        const width = window.innerWidth;
+        const height = document.documentElement.scrollHeight;
+
+        /* Escrever em canvas.width/height limpa o bitmap inteiro, e o
+           redesenho por faixa não repinta o que está fora da tela. Só
+           reatribui quando muda de fato — o ResizeObserver dispara também
+           em situações que não alteram dimensão nenhuma. */
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+          measure();
+          /* Sem loop rodando ninguém repintaria o canvas recém-limpo. */
+          if (reducedMotion) draw(0, canvas.height);
+          return;
+        }
+
+        measure();
+      };
+
+      const handleScroll = () => {
+        /* Só guarda a posição; quem desenha é o rAF, no máximo uma vez por
+           frame. Nada de setState aqui. */
+        scrollY = window.scrollY;
+      };
+
+      const handleVisibility = () => {
+        if (document.hidden) {
+          stopLoop();
+        } else {
+          startLoop();
+        }
+      };
+
       resize();
-      animationId = window.requestAnimationFrame(update);
+
+      if (reducedMotion) {
+        /* Uma passada na página inteira: como não há loop, o que não for
+           pintado agora ficaria vazio ao rolar. */
+        draw(0, canvas.height);
+      } else {
+        startLoop();
+      }
 
       const resizeObserver = new ResizeObserver(resize);
       resizeObserver.observe(document.documentElement);
       window.addEventListener("resize", resize);
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      document.addEventListener("visibilitychange", handleVisibility);
 
       return () => {
-        window.cancelAnimationFrame(animationId);
+        stopLoop();
         window.removeEventListener("resize", resize);
+        window.removeEventListener("scroll", handleScroll);
+        document.removeEventListener("visibilitychange", handleVisibility);
         resizeObserver.disconnect();
       };
     };
