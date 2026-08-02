@@ -2,9 +2,22 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    /* AVIF antes de WebP: ~20% menor no mesmo alvo de qualidade, e a imagem
-       da hero (elemento LCP no mobile) é a que mais se beneficia. */
-    formats: ["image/avif", "image/webp"],
+    /* Só AVIF, de propósito. Com ["image/avif", "image/webp"] a lista parece
+       uma ordem de preferência do servidor, mas não é: o otimizador escolhe
+       pela ordem do header `Accept` do browser e ignora os valores de `q`.
+       O Safari anuncia `image/webp` antes de `image/avif`, então todo browser
+       WebKit (Safari e Chrome do iPhone, que é WKWebView) caía no WebP e
+       baixava o dobro de bytes — medido contra produção: hero LCP do mobile
+       70.134 B em WebP contra 35.352 B em AVIF, e a mesma proporção no logo
+       e nos prints.
+
+       Com um formato só não há o que negociar: quem aceita AVIF recebe AVIF.
+       Quem não aceita (Safari <= 16.3, Firefox <= 92) cai em JPEG — inclusive
+       para os fontes .webp, o otimizador não devolve o original. Medido no
+       build: hero 62,6 KB e logo 6,9 KB em JPEG contra 70,1 KB e 9,3 KB em
+       WebP hoje, ou seja, esses até melhoram; só os prints pioram ~2,5 KB, e
+       são lazy e abaixo da dobra. Saldo do fallback: neutro. */
+    formats: ["image/avif"],
 
     /* 320 cobre os cards do leque de depoimentos: 160px de CSS num aparelho
        de DPR 1.75 pedem 280px reais, e sem esse degrau o browser pulava

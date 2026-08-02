@@ -42,12 +42,15 @@ export function Hero() {
                ("os recursos do LCP não devem usar loading=lazy").
 
                `loading="eager"` em vez de `priority` (deprecado no Next 16 em
-               favor de `preload`). Efeito colateral aceito: com eager o Next
-               injeta um <link rel=preload> no <head> — `preload={false}` não
-               suprime —, então o mobile, onde esta imagem fica em
-               display:none, passa a baixar o menor degrau do srcset (7,4 KB
-               AVIF, graças ao `1px` do `sizes`). Custo medido e validado
-               contra o alvo de não regredir o mobile. */
+               favor de `preload`). Efeito colateral aceito: o SSR do React 19
+               emite <link rel=preload> sozinho para todo <img> que não seja
+               loading="lazy" nem fetchPriority="low", e promove ao balde de
+               alta prioridade quando fetchPriority="high" — não é o Next que
+               injeta, então `preload={false}` não teria efeito nenhum aqui.
+               Com isso o mobile, onde esta imagem fica em display:none, baixa
+               o menor degrau do srcset (~6,9 KB AVIF, graças ao `1px` do
+               `sizes`). Custo medido e validado contra o alvo de não regredir
+               o mobile. */
             loading="eager"
             fetchPriority="high"
             sizes="(min-width: 1024px) 84vw, 1px"
@@ -189,7 +192,16 @@ export function Hero() {
             width={800}
             height={1200}
             className="hero-mobile-photo__img"
-            priority
+            /* Mesma receita do hero desktop, e pelo mesmo motivo. O `priority`
+               que estava aqui (deprecado no Next 16) só liga o preload —
+               `preload: preload || priority` — sem setar fetchPriority. O
+               React 19 então despejava esta imagem no balde comum de preloads,
+               que ele descarrega DEPOIS do balde de alta prioridade, onde o
+               hero desktop já estava por causa do seu fetchPriority="high".
+               Resultado no iPhone: uma imagem em display:none era buscada na
+               frente do elemento LCP real da tela. */
+            loading="eager"
+            fetchPriority="high"
             /* espelha o --hero-photo-w do CSS: declarar só o teto de 26rem
                fazia o browser pedir o degrau de 750px quando a altura da tela
                (42vh) é o limite real na maioria dos aparelhos. */
