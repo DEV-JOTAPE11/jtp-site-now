@@ -1,7 +1,9 @@
 "use client";
 
 import { type ReactNode } from "react";
-import { motion, type Variants } from "framer-motion";
+/* `m` + LazyMotion (ver MotionProvider) no lugar de `motion`: mesma API para
+   o que usamos aqui, sem carregar as features de drag e layout animation. */
+import { m, type Variants } from "framer-motion";
 
 type Direction = "up" | "down" | "left" | "right" | "scale";
 
@@ -50,7 +52,7 @@ export function ScrollReveal({
   once = true,
   as = "div",
 }: ScrollRevealProps) {
-  const Wrapper = as === "li" ? motion.li : motion.div;
+  const Wrapper = as === "li" ? m.li : m.div;
 
   return (
     <Wrapper

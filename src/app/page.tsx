@@ -10,6 +10,7 @@ import { Comparison } from "@/components/sections/Comparison";
 import { Contact } from "@/components/sections/Contact";
 import { FAQ } from "@/components/sections/FAQ";
 import { Footer } from "@/components/layout/Footer";
+import { MotionProvider } from "@/components/shared/MotionProvider";
 
 const ParticlesCanvas = dynamic(
   () =>
@@ -29,23 +30,25 @@ const FloatingWhatsApp = dynamic(
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
-      {/* Navbar removida do site (componente mantido em
-          components/layout/Navbar.tsx para rollback). */}
-      <ParticlesCanvas />
-      <Hero />
-      <Differentials />
-      <Testimonials />
-      <Portfolio />
-      <Services />
-      <Comparison />
-      {/* Seção "Agente de Inteligência Artificial" removida do site
-          (componente mantido em components/sections/AIAgent.tsx para
-          rollback). */}
-      <Contact />
-      <FAQ />
-      <Footer />
-      <FloatingWhatsApp />
-    </main>
+    <MotionProvider>
+      <main className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
+        {/* Navbar removida do site (componente mantido em
+            components/layout/Navbar.tsx para rollback). */}
+        <ParticlesCanvas />
+        <Hero />
+        <Differentials />
+        <Testimonials />
+        <Portfolio />
+        <Services />
+        <Comparison />
+        {/* Seção "Agente de Inteligência Artificial" removida do site
+            (componente mantido em components/sections/AIAgent.tsx para
+            rollback). */}
+        <Contact />
+        <FAQ />
+        <Footer />
+        <FloatingWhatsApp />
+      </main>
+    </MotionProvider>
   );
 }

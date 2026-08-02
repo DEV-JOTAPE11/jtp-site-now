@@ -21,6 +21,13 @@ export function useParticlesCanvas(): void {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
+      /* Com movimento reduzido o fundo é desenhado uma única vez, no mesmo
+         estado inicial (time = 0), em vez de rodar o rAF continuamente:
+         mesma imagem, sem o custo de CPU por frame. */
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
       let time = 0;
       const isMobile = window.innerWidth < 768;
       const targetInterval = isMobile ? 1000 / 30 : 1000 / 45;
@@ -227,6 +234,7 @@ export function useParticlesCanvas(): void {
         });
 
         time += 0.016;
+        if (reducedMotion) return;
         animationId = window.requestAnimationFrame(update);
       };
 

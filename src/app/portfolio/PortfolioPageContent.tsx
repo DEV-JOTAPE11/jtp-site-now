@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { Footer } from "@/components/layout/Footer";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
+import { MotionProvider } from "@/components/shared/MotionProvider";
 import { ScrollReveal } from "@/components/shared/ScrollReveal";
 import {
   PORTFOLIO_FILTERS,
@@ -47,6 +48,7 @@ export function PortfolioPageContent() {
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
       <ParticlesCanvas />
 
+      <MotionProvider>
       <section className="relative z-10 px-4 pt-12 pb-20 md:pt-16 md:pb-28">
         <div className="max-w-7xl mx-auto">
           <Link
@@ -123,6 +125,7 @@ export function PortfolioPageContent() {
           )}
         </div>
       </section>
+      </MotionProvider>
 
       <Footer />
       <FloatingWhatsApp />
