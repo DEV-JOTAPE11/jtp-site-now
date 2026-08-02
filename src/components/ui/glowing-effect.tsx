@@ -1,8 +1,137 @@
 "use client";
 
-import { memo, useCallback, useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { animate } from "framer-motion";
+
+/* ---------------------------------------------------------------------------
+   Controlador compartilhado
+
+   A home renderiza 9 GlowingEffect (5 em Services, 1 em Comparison, 3 nos
+   previews de portfólio). Na versão anterior cada instância registrava o seu
+   próprio `pointermove` no document.body e o seu próprio `scroll` na window, e
+   agendava o próprio rAF: 18 listeners e até 9 rAF concorrentes, com 9
+   getBoundingClientRect() (layout forçado) a cada movimento do mouse.
+
+   Aqui há um listener de cada tipo, um único rAF e os rects em cache,
+   invalidados só por scroll/resize — que são os eventos que de fato mudam a
+   posição dos cards na viewport. A matemática por instância é a mesma de
+   antes, então o glow se comporta e aparece exatamente igual.
+   --------------------------------------------------------------------------- */
+
+interface GlowEntry {
+  element: HTMLDivElement;
+  inactiveZone: number;
+  proximity: number;
+  movementDuration: number;
+  rect: DOMRect | null;
+}
+
+const entries = new Set<GlowEntry>();
+const pointer = { x: 0, y: 0 };
+let frameId = 0;
+let rectsDirty = true;
+
+const schedule = () => {
+  if (frameId) return;
+  frameId = requestAnimationFrame(flush);
+};
+
+function updateEntry(entry: GlowEntry) {
+  const { element, rect } = entry;
+  if (!rect) return;
+
+  const { left, top, width, height } = rect;
+  const mouseX = pointer.x;
+  const mouseY = pointer.y;
+
+  const center = [left + width * 0.5, top + height * 0.5];
+  const distanceFromCenter = Math.hypot(mouseX - center[0], mouseY - center[1]);
+  const inactiveRadius = 0.5 * Math.min(width, height) * entry.inactiveZone;
+
+  if (distanceFromCenter < inactiveRadius) {
+    element.style.setProperty("--active", "0");
+    return;
+  }
+
+  const isActive =
+    mouseX > left - entry.proximity &&
+    mouseX < left + width + entry.proximity &&
+    mouseY > top - entry.proximity &&
+    mouseY < top + height + entry.proximity;
+
+  element.style.setProperty("--active", isActive ? "1" : "0");
+
+  if (!isActive) return;
+
+  const currentAngle =
+    parseFloat(element.style.getPropertyValue("--start")) || 0;
+  const targetAngle =
+    (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) / Math.PI + 90;
+
+  const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
+  const newAngle = currentAngle + angleDiff;
+
+  animate(currentAngle, newAngle, {
+    duration: entry.movementDuration,
+    ease: [0.16, 1, 0.3, 1],
+    onUpdate: (value) => {
+      element.style.setProperty("--start", String(value));
+    },
+  });
+}
+
+function flush() {
+  frameId = 0;
+
+  /* Uma leva de leituras antes de qualquer escrita, e só quando algo pode ter
+     movido: evita o ciclo leitura/escrita que forçava layout por card. */
+  if (rectsDirty) {
+    for (const entry of entries) {
+      entry.rect = entry.element.getBoundingClientRect();
+    }
+    rectsDirty = false;
+  }
+
+  for (const entry of entries) updateEntry(entry);
+}
+
+const handlePointerMove = (event: PointerEvent) => {
+  pointer.x = event.x;
+  pointer.y = event.y;
+  schedule();
+};
+
+const invalidateRects = () => {
+  rectsDirty = true;
+  schedule();
+};
+
+function register(entry: GlowEntry) {
+  if (entries.size === 0) {
+    document.body.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
+    window.addEventListener("scroll", invalidateRects, { passive: true });
+    window.addEventListener("resize", invalidateRects, { passive: true });
+  }
+  entries.add(entry);
+  rectsDirty = true;
+  schedule();
+}
+
+function unregister(entry: GlowEntry) {
+  entries.delete(entry);
+  if (entries.size > 0) return;
+
+  document.body.removeEventListener("pointermove", handlePointerMove);
+  window.removeEventListener("scroll", invalidateRects);
+  window.removeEventListener("resize", invalidateRects);
+  if (frameId) {
+    cancelAnimationFrame(frameId);
+    frameId = 0;
+  }
+}
 
 interface GlowingEffectProps {
   blur?: number;
@@ -30,92 +159,22 @@ const GlowingEffect = memo(
     disabled = true,
   }: GlowingEffectProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const lastPosition = useRef({ x: 0, y: 0 });
-    const animationFrameRef = useRef<number>(0);
-
-    const handleMove = useCallback(
-      (e?: MouseEvent | { x: number; y: number }) => {
-        if (!containerRef.current) return;
-
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
-        }
-
-        animationFrameRef.current = requestAnimationFrame(() => {
-          const element = containerRef.current;
-          if (!element) return;
-
-          const { left, top, width, height } = element.getBoundingClientRect();
-          const mouseX = e?.x ?? lastPosition.current.x;
-          const mouseY = e?.y ?? lastPosition.current.y;
-
-          if (e) {
-            lastPosition.current = { x: mouseX, y: mouseY };
-          }
-
-          const center = [left + width * 0.5, top + height * 0.5];
-          const distanceFromCenter = Math.hypot(
-            mouseX - center[0],
-            mouseY - center[1]
-          );
-          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
-
-          if (distanceFromCenter < inactiveRadius) {
-            element.style.setProperty("--active", "0");
-            return;
-          }
-
-          const isActive =
-            mouseX > left - proximity &&
-            mouseX < left + width + proximity &&
-            mouseY > top - proximity &&
-            mouseY < top + height + proximity;
-
-          element.style.setProperty("--active", isActive ? "1" : "0");
-
-          if (!isActive) return;
-
-          const currentAngle =
-            parseFloat(element.style.getPropertyValue("--start")) || 0;
-          let targetAngle =
-            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
-              Math.PI +
-            90;
-
-          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
-          const newAngle = currentAngle + angleDiff;
-
-          animate(currentAngle, newAngle, {
-            duration: movementDuration,
-            ease: [0.16, 1, 0.3, 1],
-            onUpdate: (value) => {
-              element.style.setProperty("--start", String(value));
-            },
-          });
-        });
-      },
-      [inactiveZone, proximity, movementDuration]
-    );
 
     useEffect(() => {
-      if (disabled) return;
+      const element = containerRef.current;
+      if (disabled || !element) return;
 
-      const handleScroll = () => handleMove();
-      const handlePointerMove = (e: PointerEvent) => handleMove(e);
-
-      window.addEventListener("scroll", handleScroll, { passive: true });
-      document.body.addEventListener("pointermove", handlePointerMove, {
-        passive: true,
-      });
-
-      return () => {
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
-        }
-        window.removeEventListener("scroll", handleScroll);
-        document.body.removeEventListener("pointermove", handlePointerMove);
+      const entry: GlowEntry = {
+        element,
+        inactiveZone,
+        proximity,
+        movementDuration,
+        rect: null,
       };
-    }, [handleMove, disabled]);
+
+      register(entry);
+      return () => unregister(entry);
+    }, [disabled, inactiveZone, proximity, movementDuration]);
 
     return (
       <>
