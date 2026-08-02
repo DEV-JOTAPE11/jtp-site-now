@@ -553,6 +553,32 @@ nav .jtp-desktop-inner {
 /* ============================================
    HERO SPECIFICS
    ============================================ */
+
+/* Reveal de entrada da hero. Reproduz exatamente o ScrollReveal
+   (framer-motion "easeOut" = cubic-bezier(0, 0, 0.58, 1), 0.8s, y: 30 -> 0),
+   mas em CSS puro: dispara no primeiro paint em vez de esperar a hidratação
+   + IntersectionObserver.
+
+   O estado inicial é opacity 0.01, e não 0, de propósito: o Chrome descarta
+   elementos totalmente transparentes como candidatos a LCP. Como todo o texto
+   acima da dobra era renderizado com opacity:0, a página não produzia nenhum
+   candidato e o Lighthouse falhava com NO_LCP (sem LCP, sem TBT, sem nota).
+   A 1% de opacidade sobre o fundo escuro a diferença é imperceptível. */
+@keyframes hero-reveal {
+  from {
+    opacity: 0.01;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-reveal {
+  animation: hero-reveal 0.8s cubic-bezier(0, 0, 0.58, 1) both;
+}
+
 .hero-image-mask {
   mask-image: linear-gradient(
       to right,
@@ -1072,6 +1098,12 @@ nav .jtp-desktop-inner {
   }
 
   .portfolio-scroll-hint {
+    animation: none;
+  }
+
+  /* sem animação o conteúdo já nasce no estado final (opacity 1, sem
+     deslocamento), porque o estado inicial vive só no keyframe */
+  .hero-reveal {
     animation: none;
   }
 }

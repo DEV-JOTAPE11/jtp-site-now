@@ -2,11 +2,17 @@
 
 import Image from "next/image";
 import { ArrowDown } from "lucide-react";
-import { ScrollReveal } from "@/components/shared/ScrollReveal";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { WHATSAPP_NUMBER, WHATSAPP_DEFAULT_MESSAGE } from "@/lib/constants";
 
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE)}`;
+
+/* A hero usa .hero-reveal (CSS) no lugar do ScrollReveal (framer-motion): o
+   conteúdo da primeira dobra precisa ser pintado sem esperar a hidratação,
+   senão não existe candidato a LCP. As demais seções seguem com ScrollReveal. */
+function revealDelay(seconds: number) {
+  return seconds ? { animationDelay: `${seconds}s` } : undefined;
+}
 
 function scrollToFormulario() {
   const target = document.getElementById("formulario");
@@ -20,13 +26,18 @@ export function Hero() {
       {/* Desktop (>= 1024px) */}
       <div className="hidden lg:block relative min-h-screen">
         <div className="absolute inset-0 z-0">
+          {/* Os dois heros coexistem no DOM (um oculto por display:none), então
+              o `sizes` faz o trabalho de art direction: o `1px` fora do
+              breakpoint leva o browser a escolher o menor degrau do srcset no
+              lado que nunca exibe esta imagem. */}
           <Image
-            src="/img/imagem-background-hero.svg"
+            src="/img/imagem-background-hero.webp"
             alt="João Pedro - Fundador da JTP Services"
             width={1920}
             height={1080}
             className="absolute hero-image-mask hero-desktop-media"
             fetchPriority="high"
+            sizes="(min-width: 1024px) 84vw, 1px"
           />
 
           <div
@@ -88,16 +99,17 @@ export function Hero() {
           <div style={{ maxWidth: "42rem" }}>
             <div className="mb-6 flex justify-center">
               <Image
-                src="/img/logo-hero-name.svg"
+                src="/img/logo-hero-name.webp"
                 alt="Ascensão Company"
                 width={640}
                 height={241}
                 className="h-auto object-contain mx-auto"
                 style={{ width: "min(520px, 80vw)" }}
+                sizes="(min-width: 1024px) 520px, 1px"
               />
             </div>
 
-            <ScrollReveal>
+            <div className="hero-reveal">
               <h1 className="text-5xl lg:text-6xl font-bold font-[family-name:var(--font-display)] leading-tight mb-6">
                 Sua empresa não precisa só de um{" "}
                 <span className="hero-text-gradient">site.</span>
@@ -105,26 +117,26 @@ export function Hero() {
                 Precisa vender mais e gerar{" "}
                 <span className="hero-text-gradient">resultados.</span>
               </h1>
-            </ScrollReveal>
+            </div>
 
-            <ScrollReveal delay={0.1}>
+            <div className="hero-reveal" style={revealDelay(0.1)}>
               <div className="mb-5">
                 <p className="text-2xl font-[family-name:var(--font-display)] font-semibold text-foreground/90">
                   Site + Divulgação + Estratégia ={" "}
                   <span className="hero-text-gradient">Clientes</span>
                 </p>
               </div>
-            </ScrollReveal>
+            </div>
 
-            <ScrollReveal delay={0.2}>
+            <div className="hero-reveal" style={revealDelay(0.2)}>
               <p className="text-lg text-muted-foreground max-w-lg mb-8">
                 Criamos uma estrutura digital completa para atrair as pessoas
                 certas, apresentar sua marca com autoridade e transformar
                 visitantes em vendas.
               </p>
-            </ScrollReveal>
+            </div>
 
-            <ScrollReveal delay={0.3}>
+            <div className="hero-reveal" style={revealDelay(0.3)}>
               <div className="mb-6">
                 <a
                   href={WHATSAPP_URL}
@@ -136,9 +148,9 @@ export function Hero() {
                   FALE CONOSCO!
                 </a>
               </div>
-            </ScrollReveal>
+            </div>
 
-            <ScrollReveal delay={0.4}>
+            <div className="hero-reveal" style={revealDelay(0.4)}>
               <button
                 type="button"
                 onClick={scrollToFormulario}
@@ -147,7 +159,7 @@ export function Hero() {
               >
                 <ArrowDown className="w-6 h-6 text-muted-foreground animate-bounce" />
               </button>
-            </ScrollReveal>
+            </div>
           </div>
         </div>
       </div>
@@ -156,26 +168,30 @@ export function Hero() {
       <div className="hero-mobile lg:hidden relative min-h-screen flex flex-col items-center justify-center px-6 text-center">
         <div className="hero-mobile-photo">
           <div className="hero-mobile-glow pulse-glow" aria-hidden="true" />
+          {/* elemento LCP do mobile — que é o que o PageSpeed audita: carrega
+              com prioridade em vez de lazy, para virar candidato cedo. */}
           <Image
-            src="/img/new-hero-abstract.svg"
+            src="/img/new-hero-abstract.webp"
             alt="João Pedro, fundador da JTP Services"
             width={800}
             height={1200}
             className="hero-mobile-photo__img"
-            fetchPriority="high"
+            priority
+            sizes="(max-width: 1023px) 26rem, 1px"
           />
         </div>
 
         <div className="hero-mobile-content">
           <Image
-            src="/img/logo-hero-name.svg"
+            src="/img/logo-hero-name.webp"
             alt="Ascensão Company"
             width={640}
             height={241}
             className="hero-mobile-logo"
+            sizes="(max-width: 1023px) 16rem, 1px"
           />
 
-          <ScrollReveal>
+          <div className="hero-reveal">
             <h1 className="hero-mobile-title font-bold font-[family-name:var(--font-display)]">
               Sua empresa não precisa só de um
               <span className="hero-text-gradient"> site.</span>
@@ -183,24 +199,24 @@ export function Hero() {
               Precisa vender mais e gerar{" "}
               <span className="hero-text-gradient">resultados.</span>
             </h1>
-          </ScrollReveal>
+          </div>
 
-          <ScrollReveal delay={0.1}>
+          <div className="hero-reveal" style={revealDelay(0.1)}>
             <p className="hero-mobile-equation font-[family-name:var(--font-display)] font-semibold text-foreground/90">
               Site + Divulgação + Estratégia ={" "}
               <span className="hero-text-gradient">Clientes</span>
             </p>
-          </ScrollReveal>
+          </div>
 
-          <ScrollReveal delay={0.2}>
+          <div className="hero-reveal" style={revealDelay(0.2)}>
             <p className="hero-mobile-description text-muted-foreground">
               Criamos uma estrutura digital completa para atrair as pessoas
               certas, apresentar sua marca com autoridade e transformar
               visitantes em vendas.
             </p>
-          </ScrollReveal>
+          </div>
 
-          <ScrollReveal delay={0.3}>
+          <div className="hero-reveal" style={revealDelay(0.3)}>
             <a
               href={WHATSAPP_URL}
               target="_blank"
@@ -210,7 +226,7 @@ export function Hero() {
               <WhatsAppIcon className="h-5 w-5" />
               FALE CONOSCO!
             </a>
-          </ScrollReveal>
+          </div>
         </div>
       </div>
     </section>

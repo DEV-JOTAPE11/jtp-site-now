@@ -101,11 +101,46 @@ function DifferentialsCarouselMobile() {
     }
   };
 
-  /* Scroll to the initial card on mount (instant, no visible jump) */
+  /* Scroll to the initial card on mount (instant, no visible jump).
+
+     Adiado até a seção se aproximar da viewport, em vez de rodar no mount: o
+     Chrome encerra o registro de candidatos a LCP no primeiro scroll da
+     página (PaintTimingDetector::NotifyScroll). Este scroll programático
+     rodava antes de a imagem da hero pintar, e a página inteira reportava
+     NO_LCP — sem LCP, sem TBT e sem nota de desempenho no PageSpeed.
+
+     Como o carrossel fica abaixo da dobra, quando o observer dispara o
+     usuário já rolou a página (a métrica de LCP já foi encerrada de qualquer
+     forma) e o reposicionamento continua invisível. */
   useEffect(() => {
-    // Small RAF delay so the track is laid out before we scroll.
-    const id = requestAnimationFrame(() => scrollToIndex(initialIndex, "auto"));
-    return () => cancelAnimationFrame(id);
+    const track = trackRef.current;
+    if (!track) return;
+
+    let raf = 0;
+    let positioned = false;
+
+    const position = () => {
+      if (positioned) return;
+      positioned = true;
+      // RAF para garantir que o track já está laid out antes de rolar.
+      raf = requestAnimationFrame(() => scrollToIndex(initialIndex, "auto"));
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          position();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px 150px 0px" },
+    );
+    observer.observe(track);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+    };
   }, [scrollToIndex]);
 
   /* Detect which card is centred using IntersectionObserver */
