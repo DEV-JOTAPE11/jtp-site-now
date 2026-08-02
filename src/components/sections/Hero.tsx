@@ -4,6 +4,9 @@ import Image from "next/image";
 import { ArrowDown } from "lucide-react";
 import { ScrollReveal } from "@/components/shared/ScrollReveal";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
+import { WHATSAPP_NUMBER, WHATSAPP_DEFAULT_MESSAGE } from "@/lib/constants";
+
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE)}`;
 
 function scrollToFormulario() {
   const target = document.getElementById("formulario");
@@ -123,13 +126,15 @@ export function Hero() {
 
             <ScrollReveal delay={0.3}>
               <div className="mb-6">
-                <button
+                <a
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="btn-cta btn-cta-whatsapp glow-whatsapp"
-                  onClick={scrollToFormulario}
                 >
                   <WhatsAppIcon className="h-5 w-5" />
                   FALE CONOSCO!
-                </button>
+                </a>
               </div>
             </ScrollReveal>
 
@@ -196,13 +201,15 @@ export function Hero() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.3}>
-            <button
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-cta btn-cta-whatsapp glow-whatsapp hero-mobile-cta"
-              onClick={scrollToFormulario}
             >
               <WhatsAppIcon className="h-5 w-5" />
               FALE CONOSCO!
-            </button>
+            </a>
           </ScrollReveal>
         </div>
       </div>
