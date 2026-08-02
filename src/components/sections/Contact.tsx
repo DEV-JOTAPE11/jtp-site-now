@@ -120,6 +120,7 @@ export function Contact() {
               />
               <select
                 name="setor"
+                aria-label="Setor da empresa"
                 required
                 defaultValue=""
                 className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground"
@@ -136,6 +137,7 @@ export function Contact() {
               </select>
               <select
                 name="faturamento"
+                aria-label="Faturamento mensal"
                 required
                 defaultValue=""
                 className="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground"
