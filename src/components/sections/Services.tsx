@@ -73,8 +73,13 @@ export function Services() {
             if (index === 4) areaClass = "[grid-area:3/1/4/3] lg:[grid-area:2/9/3/13]";
 
             return (
-              <ScrollReveal key={service.title} delay={index * 0.1} className={areaClass}>
-                <li className="relative h-full rounded-[1.25rem] border border-[rgba(40,126,215,0.2)] p-2 md:rounded-[1.5rem] md:p-3 list-none">
+              <ScrollReveal
+                key={service.title}
+                as="li"
+                delay={index * 0.1}
+                className={areaClass}
+              >
+                <div className="relative h-full rounded-[1.25rem] border border-[rgba(40,126,215,0.2)] p-2 md:rounded-[1.5rem] md:p-3 list-none">
                   <GlowingEffect
                     spread={40}
                     glow={true}
@@ -97,7 +102,7 @@ export function Services() {
                       </p>
                     </div>
                   </div>
-                </li>
+                </div>
               </ScrollReveal>
             );
           })}

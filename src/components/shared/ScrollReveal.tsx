@@ -12,6 +12,10 @@ interface ScrollRevealProps {
   duration?: number;
   className?: string;
   once?: boolean;
+  /* Elemento renderizado pelo wrapper. Usado quando o reveal precisa ser o
+     filho direto de uma lista: <ul> só aceita <li> como filho, e o wrapper
+     de animação fica entre os dois. */
+  as?: "div" | "li";
 }
 
 const variants: Record<Direction, Variants> = {
@@ -44,9 +48,12 @@ export function ScrollReveal({
   duration = 0.8,
   className = "",
   once = true,
+  as = "div",
 }: ScrollRevealProps) {
+  const Wrapper = as === "li" ? motion.li : motion.div;
+
   return (
-    <motion.div
+    <Wrapper
       initial="hidden"
       whileInView="visible"
       viewport={{ once, margin: "0px 0px -50px 0px", amount: 0.1 }}
@@ -55,6 +62,6 @@ export function ScrollReveal({
       className={className}
     >
       {children}
-    </motion.div>
+    </Wrapper>
   );
 }
