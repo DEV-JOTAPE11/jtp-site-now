@@ -36,9 +36,14 @@ export const FATURAMENTO_OPTIONS: SelectOption[] = [
   { label: "R$ 300 mil+", value: "R$ 300 mil+" },
 ];
 
+/* Domínio canônico do site. É o `www` de propósito: o apex
+   jtpservices.com.br responde 308 para cá, e canonical/OG/sitemap têm de
+   apontar para o destino final do redirecionamento, não para a origem dele.
+   Metadata, robots e sitemap todos leem daqui. */
+export const SITE_URL = "https://www.jtpservices.com.br";
+
 export const SOCIAL_LINKS = {
-  instagram: "https://www.instagram.com/ascensaocompany_/",
-  facebook: "https://www.facebook.com/ascensaocompanymkt/",
+  instagram: "https://www.instagram.com/jtp.services/",
 } as const;
 
 export const COUNTER_TARGET = 21000;

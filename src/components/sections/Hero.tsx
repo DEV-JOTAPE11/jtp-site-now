@@ -116,7 +116,7 @@ export function Hero() {
             <div className="mb-6 flex justify-center">
               <Image
                 src="/img/logo-hero-name.webp"
-                alt="Ascensão Company"
+                alt="JTP Services"
                 width={640}
                 height={241}
                 className="h-auto object-contain mx-auto"
@@ -212,7 +212,7 @@ export function Hero() {
         <div className="hero-mobile-content">
           <Image
             src="/img/logo-hero-name.webp"
-            alt="Ascensão Company"
+            alt="JTP Services"
             width={640}
             height={241}
             className="hero-mobile-logo"
