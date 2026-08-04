@@ -73,10 +73,17 @@ export function Testimonials() {
   }, [lightbox, closeLightbox]);
 
   return (
-    <section id="depoimentos" className="py-20 md:py-32 px-4 relative">
+    <section
+      id="depoimentos"
+      aria-labelledby="depoimentos-heading"
+      className="py-20 md:py-32 px-4 relative"
+    >
       <div className="max-w-6xl mx-auto">
         <ScrollReveal className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4">
+          <h2
+            id="depoimentos-heading"
+            className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4"
+          >
             Histórias reais de{" "}
             <span className="hero-text-gradient">resultados</span>
           </h2>
@@ -204,7 +211,11 @@ export function Testimonials() {
               {/* Static thumbnail — nothing playable renders before the click. */}
               <Image
                 src={VIDEO_TESTIMONIAL.thumb}
+                /* Decorativa: o botão que a envolve já carrega o rótulo
+                   ("Ampliar: Depoimento em vídeo de cliente"), então anunciar a
+                   miniatura de novo só duplicaria a fala do leitor de tela. */
                 alt=""
+                aria-hidden="true"
                 fill
                 sizes="(max-width: 767px) 200px, 240px"
                 className="video-phone-card__video"

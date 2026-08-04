@@ -129,8 +129,12 @@ export function Comparison() {
   });
 
   return (
-    <section id="comparativo" className="py-20 md:py-32 px-4 relative">
-      <div className="absolute inset-0">
+    <section
+      id="comparativo"
+      aria-labelledby="comparativo-heading"
+      className="py-20 md:py-32 px-4 relative"
+    >
+      <div className="absolute inset-0" aria-hidden="true">
         <div
           className="absolute float-animation-delayed"
           style={{
@@ -159,7 +163,10 @@ export function Comparison() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         <ScrollReveal className="text-center mb-12 md:mb-14">
-          <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-3 text-balance">
+          <h2
+            id="comparativo-heading"
+            className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-3 text-balance"
+          >
             Você não precisa de uma agência. Precisa de{" "}
             <span className="hero-text-gradient">um time de 5 pessoas</span>.
           </h2>

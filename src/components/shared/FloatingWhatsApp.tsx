@@ -25,7 +25,10 @@ export function FloatingWhatsApp() {
       />
       <Image
         src="/img/wpp-botaoflutuante.svg"
-        alt="WhatsApp"
+        /* Ícone decorativo: o <a> já tem aria-label="Fale conosco no WhatsApp",
+           e um alt aqui faria o leitor de tela dizer "WhatsApp" duas vezes. */
+        alt=""
+        aria-hidden="true"
         width={64}
         height={64}
         className="relative w-16 h-16 object-contain drop-shadow-whatsapp"

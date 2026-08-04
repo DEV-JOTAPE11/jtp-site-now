@@ -251,10 +251,11 @@ export function Differentials() {
   return (
     <section
       id="diferenciais"
+      aria-labelledby="diferenciais-heading"
       className="py-20 md:py-32 relative overflow-hidden"
     >
       {/* Background decoration */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0" aria-hidden="true">
         <div
           className="absolute"
           style={{
@@ -272,14 +273,17 @@ export function Differentials() {
       {/* ── Section header (shared) ── */}
       <div className="max-w-7xl mx-auto relative z-10 px-4">
         <ScrollReveal className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4">
+          <h2
+            id="diferenciais-heading"
+            className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4"
+          >
             Por que somos{" "}
             <span className="hero-text-gradient">diferentes</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Não somos uma agência comum. Construímos uma máquina de vendas onde
-            cada clique tem um propósito e todo esforço vira resultado no seu
-            caixa.
+            Não somos uma agência de marketing digital comum. Construímos uma
+            máquina de vendas onde cada clique tem um propósito e todo esforço
+            vira resultado no seu caixa.
           </p>
         </ScrollReveal>
       </div>

@@ -43,8 +43,12 @@ function handleSubmit(event: FormEvent<HTMLFormElement>) {
 
 export function Contact() {
   return (
-    <section id="formulario" className="py-20 md:py-32 px-4 relative">
-      <div className="absolute inset-0">
+    <section
+      id="formulario"
+      aria-labelledby="formulario-heading"
+      className="py-20 md:py-32 px-4 relative"
+    >
+      <div className="absolute inset-0" aria-hidden="true">
         <div
           className="absolute"
           style={{
@@ -61,7 +65,10 @@ export function Contact() {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <ScrollReveal direction="left">
-            <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-6">
+            <h2
+              id="formulario-heading"
+              className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-6"
+            >
               Pronto para <span className="text-gradient">escalar</span> seu
               negócio?
             </h2>

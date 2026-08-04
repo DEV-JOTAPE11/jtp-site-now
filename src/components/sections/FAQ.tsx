@@ -5,38 +5,9 @@ import { ChevronDown } from "lucide-react";
 import { ScrollReveal } from "@/components/shared/ScrollReveal";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 import { WHATSAPP_NUMBER } from "@/lib/constants";
-
-/* Cada pergunta aqui existe para derrubar uma objeção específica — a ordem é
-   proposital: preço primeiro (é o que trava a decisão), "já tentei antes" por
-   último (é o que mais converte). */
-const FAQS = [
-  {
-    question: "Quanto custa trabalhar com a JTP?",
-    answer:
-      "Depende do que o seu negócio precisa — e é por isso que a gente não coloca um preço fixo no site. Um comércio local que precisa aparecer no Google não tem a mesma necessidade de uma empresa que quer estruturar um time de vendas. No diagnóstico gratuito a gente entende seu cenário e você sai com o valor exato na mão, sem compromisso. O que a gente garante: é uma fração do que custaria montar esse time internamente.",
-  },
-  {
-    question: "Preciso assinar contrato longo? E se eu quiser sair?",
-    answer:
-      "Você não fica preso. Trabalhamos com contratos mensais e você pode encerrar quando quiser, sem multa e sem processo trabalhista. Nossa lógica é simples: se a gente precisa de contrato longo para te manter, é porque o resultado não está te convencendo — e o problema é nosso, não seu.",
-  },
-  {
-    question: "Em quanto tempo eu vejo resultado?",
-    answer:
-      "As primeiras oportunidades de venda costumam aparecer nas primeiras semanas, porque tráfego pago começa a rodar rápido. Autoridade e crescimento de marca levam mais tempo — de 3 a 6 meses para virar um fluxo consistente. Qualquer um que te prometer resultado explosivo em 7 dias está vendendo sorte, não estratégia.",
-  },
-  {
-    question: "O investimento em anúncios está incluído no valor?",
-    answer:
-      "Não, e é importante deixar isso claro desde o começo. O valor da JTP é pelo trabalho da equipe; a verba que vai para o Google e a Meta é sua e fica na sua conta, com você acompanhando cada centavo. No diagnóstico a gente define juntos um valor de mídia realista para o seu momento — nunca mais do que seu negócio consegue sustentar.",
-  },
-  {
-    question:
-      "Já contratei agência antes e não funcionou. Por que agora seria diferente?",
-    answer:
-      "Na maioria dos casos o problema não foi o anúncio — foi que só existia o anúncio. Tráfego sem página que converte, sem texto que persuade e sem alguém para atender o lead que chega é dinheiro queimado. A JTP atua nas cinco frentes ao mesmo tempo justamente porque uma sozinha não sustenta resultado. Se depois do diagnóstico a gente achar que não é o momento do seu negócio, vamos te dizer isso.",
-  },
-];
+/* Mesma fonte que o FAQPage do JSON-LD consome (lib/schema.ts). Ver lib/faq.ts
+   para o porquê de os textos não morarem mais neste arquivo. */
+import { FAQS } from "@/lib/faq";
 
 const FAQ_WHATSAPP_MESSAGE =
   "Olá! Li as perguntas frequentes no site e ficou uma dúvida que não está lá.";
@@ -62,8 +33,12 @@ export function FAQ() {
   )}`;
 
   return (
-    <section id="faq" className="py-20 md:py-32 px-4 relative">
-      <div className="absolute inset-0">
+    <section
+      id="faq"
+      aria-labelledby="faq-heading"
+      className="py-20 md:py-32 px-4 relative"
+    >
+      <div className="absolute inset-0" aria-hidden="true">
         <div
           className="absolute float-animation"
           style={{
@@ -83,7 +58,10 @@ export function FAQ() {
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             Perguntas Frequentes
           </span>
-          <h2 className="mt-3 text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4 text-balance">
+          <h2
+            id="faq-heading"
+            className="mt-3 text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4 text-balance"
+          >
             As dúvidas que aparecem antes de{" "}
             <span className="hero-text-gradient">começar</span>
           </h2>

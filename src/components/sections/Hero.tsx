@@ -22,7 +22,11 @@ function scrollToFormulario() {
 
 export function Hero() {
   return (
-    <section id="hero" className="relative overflow-hidden">
+    <section
+      id="hero"
+      aria-labelledby="hero-heading"
+      className="relative overflow-hidden"
+    >
       {/* Desktop (>= 1024px) */}
       <div className="hidden lg:block relative min-h-screen">
         <div className="absolute inset-0 z-0">
@@ -126,13 +130,24 @@ export function Hero() {
             </div>
 
             <div className="hero-reveal">
-              <h1 className="text-5xl lg:text-6xl font-bold font-[family-name:var(--font-display)] leading-tight mb-6">
+              {/* Os blocos desktop e mobile coexistem no DOM (um é escondido por
+                  CSS), então dois <h1> literais sairiam no HTML. O <h1> de
+                  verdade ficou no bloco mobile — é o que o Googlebot renderiza,
+                  já que a indexação é mobile-first. Aqui fica um heading de
+                  nível 1 pela ARIA: mesmas classes (portanto pixel idêntico),
+                  leitor de tela do desktop continua achando o título da página,
+                  e a contagem de <h1> no documento fecha em um. */}
+              <p
+                role="heading"
+                aria-level={1}
+                className="text-5xl lg:text-6xl font-bold font-[family-name:var(--font-display)] leading-tight mb-6"
+              >
                 Sua empresa não precisa só de um{" "}
                 <span className="hero-text-gradient">site.</span>
                 <br />
                 Precisa vender mais e gerar{" "}
                 <span className="hero-text-gradient">resultados.</span>
-              </h1>
+              </p>
             </div>
 
             <div className="hero-reveal" style={revealDelay(0.1)}>
@@ -220,7 +235,11 @@ export function Hero() {
           />
 
           <div className="hero-reveal">
-            <h1 className="hero-mobile-title font-bold font-[family-name:var(--font-display)]">
+            {/* O <h1> canônico do documento — ver a nota no bloco desktop. */}
+            <h1
+              id="hero-heading"
+              className="hero-mobile-title font-bold font-[family-name:var(--font-display)]"
+            >
               Sua empresa não precisa só de um
               <span className="hero-text-gradient"> site.</span>
               <br />

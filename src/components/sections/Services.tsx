@@ -38,8 +38,12 @@ const SERVICES = [
 
 export function Services() {
   return (
-    <section id="servicos" className="py-20 md:py-32 px-4 relative">
-      <div className="absolute inset-0">
+    <section
+      id="servicos"
+      aria-labelledby="servicos-heading"
+      className="py-20 md:py-32 px-4 relative"
+    >
+      <div className="absolute inset-0" aria-hidden="true">
         <div
           className="absolute"
           style={{
@@ -55,11 +59,15 @@ export function Services() {
       </div>
       <div className="max-w-6xl mx-auto relative z-10">
         <ScrollReveal className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4">
+          <h2
+            id="servicos-heading"
+            className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-display)] mb-4"
+          >
             Nossos <span className="hero-text-gradient">Serviços</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Soluções completas para escalar o seu negócio de forma estruturada.
+            Soluções completas de marketing digital para escalar o seu negócio
+            de forma estruturada.
           </p>
         </ScrollReveal>
 

@@ -31,8 +31,13 @@ export function Footer() {
           autoridade.
         </p>
 
+        {/* O rodapé é onde o sinal local do negócio cabe sem competir com o CTA:
+            cidade/UF aqui casa com o `address` do ProfessionalService no
+            JSON-LD, em vez de o dado estruturado afirmar uma localização que a
+            página nunca mostra. */}
         <p className="text-muted-foreground text-sm">
-          © 2026 JTP Services. Todos os direitos reservados.
+          © 2026 JTP Services — Agência de marketing digital em Arinos, MG,
+          atendendo todo o Brasil. Todos os direitos reservados.
         </p>
       </div>
     </footer>
