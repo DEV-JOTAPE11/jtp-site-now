@@ -201,27 +201,18 @@ export function Hero() {
           <div className="hero-mobile-glow pulse-glow" aria-hidden="true" />
           {/* elemento LCP do mobile — que é o que o PageSpeed audita: carrega
               com prioridade em vez de lazy, para virar candidato cedo. */}
-          {/* SVG em vez do .webp para tirar o serrilhado. A arte original tem
-              498x665 px reais (os PNGs embutidos no SVG), e o .webp era um
-              upscale dela para 800x1200 — ou seja, o pixel chegava na tela
-              depois de dois upscales e duas codificações com perda
-              (498 -> webp 800 -> AVIF do otimizador -> ~1063 px de tela num
-              DPR 3). Servindo o SVG, o browser rasteriza os PNGs sem perda
-              direto na resolução do aparelho: sobra um upscale só, e as
-              máscaras/filtros do vetor saem nítidos.
-
-              O Next 16 serve .svg como está — `unoptimized` é ligado sozinho
-              (get-img-props.js:278), sem precisar de dangerouslyAllowSVG.
-              Como não há srcset, o truque do `1px` no `sizes` perdeu efeito:
-              o desktop também baixa os 531 KB, mesmo com a imagem em
-              display:none. Trade-off aceito a pedido — a nitidez no mobile
-              vale mais que o byte no desktop. */}
+          {/* .webp no lugar do .svg (531 KB, servido sem otimização): o SVG
+              rasterizava mais nítido, mas por não ter srcset o truque do `1px`
+              no `sizes` não valia, e o desktop baixava o arquivo inteiro com a
+              imagem em display:none. Com o .webp o otimizador do Next volta a
+              gerar os degraus AVIF/WebP, então o mobile pede só o degrau do
+              tamanho da tela e o desktop cai no menor. */}
           <Image
-            src="/img/new-hero-abstract.svg"
+            src="/img/new-hero-abstract.webp"
             alt="João Pedro, fundador da JTP Services"
-            /* mesma proporção 2:3 do .webp (o SVG declara 800x1200 com
-               viewBox 600x900), então o espaço reservado não muda: sem CLS
-               e sem mexer no enquadramento. */
+            /* dimensões reais do arquivo, mesma proporção 2:3 de antes: o
+               espaço reservado não muda, sem CLS e sem mexer no
+               enquadramento. */
             width={800}
             height={1200}
             className="hero-mobile-photo__img"
@@ -235,6 +226,12 @@ export function Hero() {
                frente do elemento LCP real da tela. */
             loading="eager"
             fetchPriority="high"
+            /* espelha o --hero-photo-w do CSS: declarar só o teto de 26rem
+               fazia o browser pedir o degrau de 750px quando a altura da tela
+               (42vh) é o limite real na maioria dos aparelhos. O `1px` fora do
+               breakpoint faz a art direction do lado que nunca exibe a
+               imagem. */
+            sizes="(max-width: 1023px) min(104vw, 42vh, 26rem), 1px"
           />
         </div>
 
